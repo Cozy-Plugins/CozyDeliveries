@@ -1,18 +1,29 @@
 package com.github.cozyplugins.cozydeliveries;
 
 import com.github.cozyplugins.cozydeliveries.command.DeliveryCommand;
+import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
+import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
+import com.github.cozyplugins.cozydeliveries.event.DeliverySendEvent;
 import com.github.cozyplugins.cozylibrary.CozyPlugin;
+import com.github.cozyplugins.cozylibrary.item.CozyItem;
+import com.github.cozyplugins.cozylibrary.reward.RewardBundle;
+import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.ConfigurationFactory;
 import com.github.smuddgge.squishyconfiguration.interfaces.Configuration;
 import com.github.smuddgge.squishydatabase.DatabaseCredentials;
 import com.github.smuddgge.squishydatabase.DatabaseFactory;
+import com.github.smuddgge.squishydatabase.Query;
 import com.github.smuddgge.squishydatabase.interfaces.Database;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Represents the main plugin class.
@@ -37,7 +48,7 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         );
         this.config.setDefaultPath("src/main/resources/config.yml");
         this.config.load();
-        
+
         // Initialize the database.
         this.setupDatabase();
 
@@ -90,6 +101,72 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         );
 
         return this.database;
+    }
+
+    @Override
+    public @NotNull Optional<Delivery> getDelivery(@NotNull UUID uuid) {
+        DeliveryRecord record = this.getDatabase()
+                .getTable(DeliveryTable.class)
+                .getFirstRecord(new Query().match("uuid", uuid.toString()));
+
+        if (record == null) return Optional.empty();
+        return Optional.of(record.getDelivery());
+    }
+
+    @Override
+    public @NotNull List<Delivery> getDeliveryList(@NotNull UUID playerUuid) {
+        List<DeliveryRecord> deliveryRecordList = this.getDatabase()
+                .getTable(DeliveryTable.class)
+                .getRecordList(new Query().match("toPlayerUuid", playerUuid.toString()));
+
+        return deliveryRecordList == null ? new ArrayList<>()
+                : deliveryRecordList.stream().map(DeliveryRecord::getDelivery).toList();
+    }
+
+    @Override
+    public boolean sendDelivery(@NotNull Delivery delivery) {
+
+        // Check if the database is disabled.
+        if (this.getDatabase().isDisabled()) {
+            return false;
+        }
+
+        // Call a delivery send event.
+        DeliverySendEvent event = new DeliverySendEvent(delivery);
+        Bukkit.getPluginManager().callEvent(event);
+
+        // Check if the event was cancelled.
+        if (event.isCancelled()) return false;
+
+        // Handle in an external method to ensure
+        // the delivery instance is not used.
+        this.sendDelivery0(event);
+        return true;
+    }
+
+    @Override
+    public boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull CozyItem... items) {
+        Delivery delivery = new Delivery(playerUuid, System.currentTimeMillis());
+        delivery.setFromName(fromName);
+        delivery.setBundle(new RewardBundle().setItemList(List.of(items)));
+
+        return this.sendDelivery(delivery);
+    }
+
+    private void sendDelivery0(@NotNull DeliverySendEvent event) {
+
+        // Save the delivery to the database.
+        this.getDatabase().getTable(DeliveryTable.class)
+                .insertRecord(new DeliveryRecord(event.getDelivery()));
+
+        // Attempt to notify the player it was sent to.
+        Player player = Bukkit.getPlayer(event.getDelivery().getToPlayerUuid());
+        if (player == null) return;
+
+        new PlayerUser(player).sendMessage(this.getConfiguration()
+                .getAdaptedString("delivery.receive_message", "\n", "&7You have received a delivery from &f{sender}"
+                        .replace("{sender}", event.getDelivery().getFromName("null")))
+        );
     }
 
     /**
