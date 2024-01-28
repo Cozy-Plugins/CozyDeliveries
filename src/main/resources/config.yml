@@ -1,0 +1,10 @@
+database:
+  # The type of database to use.
+  # You can choose between SQLITE MYSQL or MONGO
+  #
+  # If you are using MYSQL you will need a connection string.
+  # If you are using MONGO you will need a connection string
+  # and the name of the database.
+  type: "SQLITE"
+  connection_string: ""
+  database_name: ""
