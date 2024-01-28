@@ -13,11 +13,15 @@ import java.util.UUID;
 
 /**
  * Represents the delivery record.
+ * Contains records of deliveries that have
+ * not been opened.
  */
 public class DeliveryRecord extends Record {
 
     @Field(type = RecordFieldType.PRIMARY)
     private @NotNull String uuid;
+    private @NotNull String toPlayerUuid;
+    private @NotNull String timeStampMillis;
 
     private @NotNull String delivery;
 
@@ -28,6 +32,8 @@ public class DeliveryRecord extends Record {
      */
     public DeliveryRecord(@NotNull Delivery delivery) {
         this.uuid = UUID.randomUUID().toString();
+        this.toPlayerUuid = delivery.getToPlayerUuid().toString();
+        this.timeStampMillis = Long.toString(delivery.getTimeStampMillis());
         this.delivery = new Gson().toJson(delivery.convert().getMap());
     }
 
@@ -39,7 +45,7 @@ public class DeliveryRecord extends Record {
      * @return The instance.
      */
     public @NotNull Delivery getDelivery() {
-        return new Delivery().convert(
+        return new Delivery(UUID.fromString(this.toPlayerUuid), Long.parseLong(this.timeStampMillis)).convert(
                 new MemoryConfigurationSection(
                         new Gson().fromJson(this.delivery, LinkedHashMap.class)
                 )
@@ -48,13 +54,18 @@ public class DeliveryRecord extends Record {
 
     /**
      * Used to change the instance of the delivery.
+     * This will also update all other fields.
+     * If the uuid has been changed the database
+     * may interpret this as a new entry.
      *
      * @param delivery The instance of the delivery.
      * @return This instance.
      */
     public @NotNull DeliveryRecord setDelivery(@NotNull Delivery delivery) {
-        this.delivery = new Gson().toJson(delivery.convert().getMap());
         this.uuid = delivery.getUuid().toString();
+        this.toPlayerUuid = delivery.getToPlayerUuid().toString();
+        this.timeStampMillis = Long.toString(delivery.getTimeStampMillis());
+        this.delivery = new Gson().toJson(delivery.convert().getMap());
         return this;
     }
 }
