@@ -1,0 +1,4 @@
+name: CozyDeliveries
+version: '${project.version}'
+main: com.github.cozyplugins.cozydeliveries.CozyDeliveries
+api-version: '1.20'
