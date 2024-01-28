@@ -1,5 +1,6 @@
 package com.github.cozyplugins.cozydeliveries.command;
 
+import com.github.cozyplugins.cozydeliveries.inventory.DeliveryInventory;
 import com.github.cozyplugins.cozylibrary.command.command.CommandType;
 import com.github.cozyplugins.cozylibrary.command.datatype.CommandArguments;
 import com.github.cozyplugins.cozylibrary.command.datatype.CommandStatus;
@@ -13,6 +14,10 @@ import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents the delivery command.
+ * Without arguments this will open the delivery menu.
+ */
 public class DeliveryCommand implements CommandType {
 
     @Override
@@ -47,7 +52,9 @@ public class DeliveryCommand implements CommandType {
 
     @Override
     public @Nullable CommandStatus onPlayer(@NotNull PlayerUser user, @NotNull ConfigurationSection section, @NotNull CommandArguments arguments) {
-        return null;
+        user.sendMessage(section.getString("opening_inventory", "&7Opening the delivery inventory..."));
+        new DeliveryInventory(user).open(user.getPlayer());
+        return new CommandStatus();
     }
 
     @Override
