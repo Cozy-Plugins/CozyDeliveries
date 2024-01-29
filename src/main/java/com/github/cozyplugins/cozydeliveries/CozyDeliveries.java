@@ -20,10 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Represents the main plugin class.
@@ -44,9 +41,9 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
         // Initialize the configuration file.
         this.config = ConfigurationFactory.YAML.create(
-                this.getDataFolder(), "config.yml"
+                this.getDataFolder(), "config"
         );
-        this.config.setDefaultPath("src/main/resources/config.yml");
+        this.config.setDefaultPath("config.yml");
         this.config.load();
 
         // Initialize the database.
@@ -79,6 +76,8 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
                     this.getConfiguration().getString("database.connection_string")
             ));
         }
+
+        this.database.createTable(new DeliveryTable());
     }
 
     @Override
@@ -146,9 +145,14 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
     @Override
     public boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull CozyItem... items) {
+        return this.sendDelivery(playerUuid, fromName, Arrays.stream(items).toList());
+    }
+
+    @Override
+    public boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull List<CozyItem> itemList) {
         Delivery delivery = new Delivery(playerUuid, System.currentTimeMillis());
         delivery.setFromName(fromName);
-        delivery.setBundle(new RewardBundle().setItemList(List.of(items)));
+        delivery.setBundle(new RewardBundle().setItemList(itemList));
 
         return this.sendDelivery(delivery);
     }

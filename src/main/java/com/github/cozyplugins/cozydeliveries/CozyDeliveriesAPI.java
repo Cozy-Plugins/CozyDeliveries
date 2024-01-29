@@ -72,4 +72,14 @@ public interface CozyDeliveriesAPI {
      * @return True if the delivery was sent.
      */
     boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull CozyItem... items);
+
+    /**
+     * Used to send a delivery to a player.
+     *
+     * @param playerUuid The player's uuid to send to.
+     * @param fromName   The name of the sender.
+     * @param itemList   The list of items to send.
+     * @return True if the delivery was sent.
+     */
+    boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull List<CozyItem> itemList);
 }
