@@ -16,3 +16,18 @@ delivery:
   # This can be a list of strings.
   # You can use the placeholder {sender} to get the sender's name.
   receive_message: "&7You have received a delivery from &f{sender}&7. &e/deliveries &7to see your deliveries."
+
+first_join:
+  enabled: true
+  items:
+    1:
+      material: WOODEN_SWORD
+    2:
+      material: WOODEN_PICKAXE
+    3:
+      material: WOODEN_AXE
+    4:
+      material: WOODEN_SHOVEL
+    5:
+      material: STEAK
+      amount: 10

@@ -15,7 +15,11 @@ import com.github.smuddgge.squishydatabase.DatabaseFactory;
 import com.github.smuddgge.squishydatabase.Query;
 import com.github.smuddgge.squishydatabase.interfaces.Database;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +30,7 @@ import java.util.*;
  * Represents the main plugin class.
  * Using the cozy library to handle commands etc.
  */
-public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAPI {
+public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAPI, Listener {
 
     private static CozyDeliveries instance;
 
@@ -59,6 +63,9 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
         // Register the commands.
         this.addCommandType(new DeliveryCommand());
+
+        // Register this as a listener.
+        this.getServer().getPluginManager().registerEvents(this, this);
     }
 
     private void setupDatabase() {
@@ -179,6 +186,23 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
                 .getAdaptedString("delivery.receive_message", "\n", "&7You have received a delivery from &f{sender}")
                 .replace("{sender}", event.getDelivery().getFromName("null"))
         );
+    }
+
+    @EventHandler
+    public void onPlayerFirstJoin(PlayerJoinEvent event) {
+        if (event.getPlayer().hasPlayedBefore()) return;
+        if (!this.getConfiguration().getBoolean("first_join.enabled")) return;
+
+        // Convert to a bundle.
+        RewardBundle bundle = new RewardBundle().convert(this.getConfiguration().getSection("first_join"));
+
+        // Create the delivery.
+        Delivery delivery = new Delivery(event.getPlayer().getUniqueId(), System.currentTimeMillis());
+        delivery.setBundle(bundle);
+        delivery.setFromName("Server");
+
+        // Send delivery.
+        this.sendDelivery(delivery);
     }
 
     /**
