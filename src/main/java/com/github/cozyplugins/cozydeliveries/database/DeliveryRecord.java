@@ -18,12 +18,15 @@ import java.util.UUID;
  */
 public class DeliveryRecord extends Record {
 
-    @Field(type = RecordFieldType.PRIMARY)
-    private @NotNull String uuid;
-    private @NotNull String toPlayerUuid;
-    private @NotNull String timeStampMillis;
+    public @Field(type = RecordFieldType.PRIMARY) @NotNull String uuid;
+    public @NotNull String toPlayerUuid;
+    public @NotNull String timeStampMillis;
 
-    private @NotNull String delivery;
+    public @NotNull String delivery;
+
+    public DeliveryRecord() {
+
+    }
 
     /**
      * Used to create a new delivery record.
