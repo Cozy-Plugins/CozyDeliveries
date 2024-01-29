@@ -15,6 +15,7 @@ import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.cozyplugins.cozylibrary.user.User;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -92,13 +94,24 @@ public class DeliverySendCommand implements CommandType {
         // Check if they have selected "item" as there first argument.
         if (arguments.getArguments().get(0).equals("item")) {
             final ItemStack itemStack = user.getPlayer().getItemInHand();
+            if (itemStack.getType().equals(Material.AIR)) {
+                user.sendMessage(section.getString("empty_item", "&7You can not send no items."));
+                return new CommandStatus();
+            }
             this.checkBeforeDeliver(user, section, player, itemStack);
             return new CommandStatus();
         }
 
         // Check if they have selected "inventory" as there first argument.
         if (arguments.getArguments().get(0).equals("inventory")) {
-            this.checkBeforeDeliver(user, section, player, user.getPlayer().getInventory().getContents());
+            ItemStack[] condensed = (ItemStack[]) Arrays.stream(user.getPlayer().getInventory().getContents())
+                    .filter(item -> !item.getType().equals(Material.AIR))
+                    .toArray();
+            if (Arrays.stream(condensed).toList().isEmpty()) {
+                user.sendMessage(section.getString("empty_item", "&7You can not send no items."));
+                return new CommandStatus();
+            }
+            this.checkBeforeDeliver(user, section, player, condensed);
             return new CommandStatus();
         }
 
@@ -120,13 +133,13 @@ public class DeliverySendCommand implements CommandType {
 
     private void deliver(@NotNull PlayerUser fromUser, @NotNull ConfigurationSection section, @NotNull OfflinePlayer toPlayer, @NotNull ItemStack... itemStacks) {
 
-        CozyItem[] cozyItemList = (CozyItem[]) Arrays.stream(itemStacks).map(CozyItem::new).toArray();
+        List<CozyItem> cozyItems = Arrays.stream(itemStacks).map(CozyItem::new).toList();
 
         // Create the delivery.
         boolean success = CozyDeliveries.getAPI().orElseThrow().sendDelivery(
                 toPlayer.getUniqueId(),
                 fromUser.getName(),
-                cozyItemList
+                cozyItems
         );
 
         if (success) {
