@@ -98,16 +98,19 @@ public class DeliverySendCommand implements CommandType {
                 user.sendMessage(section.getString("empty_item", "&7You can not send no items."));
                 return new CommandStatus();
             }
-            this.checkBeforeDeliver(user, section, player, itemStack);
+            this.checkBeforeDeliver(user, section, player, List.of(itemStack));
             return new CommandStatus();
         }
 
         // Check if they have selected "inventory" as there first argument.
         if (arguments.getArguments().get(0).equals("inventory")) {
-            ItemStack[] condensed = (ItemStack[]) Arrays.stream(user.getPlayer().getInventory().getContents())
-                    .filter(item -> !item.getType().equals(Material.AIR))
-                    .toArray();
-            if (Arrays.stream(condensed).toList().isEmpty()) {
+            List<ItemStack> condensed = Arrays.stream(user.getPlayer().getInventory().getContents())
+                    .filter(item -> {
+                        if (item == null) return false;
+                        return !item.getType().equals(Material.AIR);
+                    })
+                    .toList();
+            if (condensed.isEmpty()) {
                 user.sendMessage(section.getString("empty_item", "&7You can not send no items."));
                 return new CommandStatus();
             }
@@ -119,21 +122,21 @@ public class DeliverySendCommand implements CommandType {
         return new CommandStatus();
     }
 
-    private void checkBeforeDeliver(@NotNull PlayerUser fromUser, @NotNull ConfigurationSection section, @NotNull OfflinePlayer toPlayer, @NotNull ItemStack... itemStacks) {
+    private void checkBeforeDeliver(@NotNull PlayerUser fromUser, @NotNull ConfigurationSection section, @NotNull OfflinePlayer toPlayer, @NotNull List<ItemStack> itemStackList) {
         new ConfirmationInventory(new ConfirmAction()
                 .setAnvilTitle("&8Send Delivery")
                 .setAbort(user -> {
                     user.sendMessage(section.getAdaptedString("aborted", "\n", "&7Aborted delivery."));
                 })
                 .setConfirm(user -> {
-                    this.deliver(fromUser, section, toPlayer, itemStacks);
+                    this.deliver(fromUser, section, toPlayer, itemStackList);
                 })
         ).open(fromUser.getPlayer());
     }
 
-    private void deliver(@NotNull PlayerUser fromUser, @NotNull ConfigurationSection section, @NotNull OfflinePlayer toPlayer, @NotNull ItemStack... itemStacks) {
+    private void deliver(@NotNull PlayerUser fromUser, @NotNull ConfigurationSection section, @NotNull OfflinePlayer toPlayer, @NotNull List<ItemStack> itemStackList) {
 
-        List<CozyItem> cozyItems = Arrays.stream(itemStacks).map(CozyItem::new).toList();
+        List<CozyItem> cozyItems = itemStackList.stream().map(CozyItem::new).toList();
 
         // Create the delivery.
         boolean success = CozyDeliveries.getAPI().orElseThrow().sendDelivery(
@@ -143,14 +146,16 @@ public class DeliverySendCommand implements CommandType {
         );
 
         if (success) {
-            fromUser.sendMessage(section.getAdaptedString("sent", "\n", "&7Sent a delivery to &f{player}&7."
-                    .replace("{player}", toPlayer.getName() == null ? "null" : toPlayer.getName())));
-            Arrays.stream(itemStacks).forEach(item -> item.setAmount(0));
+            fromUser.sendMessage(section.getAdaptedString("sent", "\n", "&7Sent a delivery to &f{player}&7.")
+                    .replace("{player}", toPlayer.getName() == null ? "null" : toPlayer.getName())
+            );
+            itemStackList.forEach(item -> item.setAmount(0));
             return;
         }
 
-        fromUser.sendMessage(section.getAdaptedString("cancelled", "\n", "&7Unable to send this delivery to &f{player}&7."
-                .replace("{player}", toPlayer.getName() == null ? "null" : toPlayer.getName())));
+        fromUser.sendMessage(section.getAdaptedString("cancelled", "\n", "&7Unable to send this delivery to &f{player}&7.")
+                .replace("{player}", toPlayer.getName() == null ? "null" : toPlayer.getName())
+        );
     }
 
     @Override

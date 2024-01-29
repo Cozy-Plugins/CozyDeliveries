@@ -168,8 +168,8 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         if (player == null) return;
 
         new PlayerUser(player).sendMessage(this.getConfiguration()
-                .getAdaptedString("delivery.receive_message", "\n", "&7You have received a delivery from &f{sender}"
-                        .replace("{sender}", event.getDelivery().getFromName("null")))
+                .getAdaptedString("delivery.receive_message", "\n", "&7You have received a delivery from &f{sender}")
+                .replace("{sender}", event.getDelivery().getFromName("null"))
         );
     }
 
