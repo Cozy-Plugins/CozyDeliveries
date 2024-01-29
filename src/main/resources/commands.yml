@@ -2,6 +2,25 @@ deliveries:
   type: "deliveries"
   name: "deliveries"
   opening_inventory: "&7Opening the delivery inventory..."
+  inventory:
+    title: "&8&lDeliveries"
+    slots: [
+      13, 14, 15, 16,
+      22, 23, 24, 25,
+      31, 32, 33, 34,
+      40, 41, 42, 43
+    ]
+    material: "BARREL"
+    custom_model_data: 0
+    name: "&6&lDelivery"
+    lore:
+      - "&7Click to collect delivery."
+      - "&7"
+      - "&e&lContent"
+      - "&f{content}"
+    inventory_space: "&7You dont have enough inventory space to collect this delivery."
+    success: "&7You have received a delivery."
+    ailed: "&7Failed to receive a delivery."
 
   send:
     name: "send"

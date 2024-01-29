@@ -1,3 +1,5 @@
+currency: "{number} coins"
+
 database:
   # The type of database to use.
   # You can choose between SQLITE MYSQL or MONGO

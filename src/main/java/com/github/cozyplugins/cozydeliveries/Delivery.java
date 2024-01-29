@@ -5,14 +5,16 @@ import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
 import com.github.cozyplugins.cozylibrary.indicator.ConfigurationConvertable;
 import com.github.cozyplugins.cozylibrary.indicator.Replicable;
 import com.github.cozyplugins.cozylibrary.indicator.Savable;
+import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.cozyplugins.cozylibrary.reward.RewardBundle;
+import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
+import com.github.smuddgge.squishydatabase.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Represents a delivery to be given to a player.
@@ -89,6 +91,33 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     }
 
     /**
+     * Used to get the content of the delivery as a list of strings.
+     *
+     * @return The content as a string.
+     */
+    public @NotNull String getContenceString() {
+
+        // Add the items.
+        List<String> content = new java.util.ArrayList<>(this.bundle.getItemList().stream()
+                .map(CozyItem::getName)
+                .toList()
+        );
+
+        if (this.bundle.getMoney() != 0) {
+            content.add(CozyDeliveries.getAPI().orElseThrow().getConfiguration()
+                    .getString("currency", "{number} coins")
+                    .replace("{number}", Double.toString(this.bundle.getMoney()))
+            );
+        }
+
+        if (!this.bundle.getCommandList().isEmpty()) {
+            content.addAll(this.bundle.getCommandList());
+        }
+
+        return String.join(", ", content);
+    }
+
+    /**
      * Used to set the uuid to a new uuid.
      * Be careful as this could cause unintended
      * side effects.
@@ -134,6 +163,37 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     public @NotNull Delivery setBundle(@NotNull RewardBundle bundle) {
         this.bundle = bundle;
         return this;
+    }
+
+    /**
+     * Used to check if a user has enough inventory space to obtain the delivery.
+     *
+     * @param user The instance of the user.
+     * @return True if they have enough room.
+     */
+    public boolean hasInventorySpace(@NotNull PlayerUser user) {
+        int itemAmount = this.bundle.getItemList().size();
+        return itemAmount <= Arrays.stream(user.getPlayer().getInventory().getContents())
+                .filter(Objects::isNull).toList().size();
+    }
+
+    /**
+     * USed to delete the delivery from the
+     * database and then give it to a user.
+     *
+     * @param user The instance of the user.
+     * @return True if successful.
+     */
+    public boolean give(@NotNull PlayerUser user) {
+
+        // Remove the record from the database.
+        boolean success = CozyDeliveries.getAPI().orElseThrow().getDatabase()
+                .getTable(DeliveryTable.class)
+                .removeAllRecords(new Query().match("uuid", this.uuid.toString()));
+
+        if (!success) return false;
+        this.bundle.giveRewardBundle(user);
+        return true;
     }
 
     @Override

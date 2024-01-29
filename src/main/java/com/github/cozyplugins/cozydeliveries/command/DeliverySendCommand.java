@@ -24,6 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Represents the delivery send command.
+ * Used to send a delivery to another player.
+ */
 public class DeliverySendCommand implements CommandType {
 
     @Override
