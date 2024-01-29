@@ -99,7 +99,11 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
 
         // Add the items.
         List<String> content = new java.util.ArrayList<>(this.bundle.getItemList().stream()
-                .map(CozyItem::getName)
+                .map(item -> {
+                    if (item.getName().isEmpty()) return item.getMaterial().toString()
+                            .toLowerCase().replace("_", " ") + " &ex" + item.getAmount();
+                    return item.getName() + " &ex" + item.getAmount();
+                })
                 .toList()
         );
 
@@ -203,7 +207,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         section.set("to_player_uuid", this.toPlayerUuid.toString());
         section.set("from_name", this.fromName);
         section.set("time_stamp_millis", this.timeStampMillis);
-        section.set("package", this.bundle.convert());
+        section.set("package", this.bundle.convert().getMap());
 
         return section;
     }

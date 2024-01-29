@@ -36,7 +36,7 @@ public class DeliveryInventory extends InventoryInterface {
      * @param section The configuration section that represents the inventory.
      */
     public DeliveryInventory(@NotNull UUID deliveryPlayerUuid, @NotNull ConfigurationSection section) {
-        super(54, section.getString("deliveries"));
+        super(54, section.getString("title", "&8&lDeliveries"));
 
         this.deliveryPlayerUuid = deliveryPlayerUuid;
         this.section = section;
@@ -44,6 +44,7 @@ public class DeliveryInventory extends InventoryInterface {
 
     @Override
     protected void onGenerate(PlayerUser player) {
+        this.resetInventory();
 
         // Get the player's deliveries.
         List<Delivery> deliveryList = CozyDeliveries.getAPI()
@@ -60,7 +61,10 @@ public class DeliveryInventory extends InventoryInterface {
                     .setCustomModelData(section.getInteger("custom_model_data", 0))
                     .setName(section.getString("name", "&6&lDelivery"))
                     .setLore(section.getAdaptedString("lore", "\n", "&7Click to collect")
-                            .replace("{contents}", delivery.getContenceString().replace(", ", "\n&f")))
+                            .replace("{content}",
+                                    delivery.getContenceString().replace(", ", "\n&f")
+                            ).split("\n")
+                    )
                     .addSlot(slotIterator.next())
                     .addAction((ClickAction) (user, type, inventory) -> {
 

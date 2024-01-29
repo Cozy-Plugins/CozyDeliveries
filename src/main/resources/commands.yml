@@ -31,3 +31,4 @@ deliveries:
     sent: "&7Sent a delivery to &f{player}&7."
     cancelled: "&7Unable to send this delivery to &f{player}&7."
     aborted: "&7Aborted delivery."
+    empty_item: "&7You can not send no items."
