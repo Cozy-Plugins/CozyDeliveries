@@ -34,15 +34,18 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     private @Nullable Database database;
 
     @Override
+    public void onLoad() {
+        CozyDeliveries.instance = this;
+        super.onLoad();
+    }
+
+    @Override
     public boolean enableCommandDirectory() {
         return true;
     }
 
     @Override
     public void onCozyEnable() {
-
-        // Setup instance.
-        CozyDeliveries.instance = this;
 
         // Initialize the configuration file.
         this.config = ConfigurationFactory.YAML.create(
