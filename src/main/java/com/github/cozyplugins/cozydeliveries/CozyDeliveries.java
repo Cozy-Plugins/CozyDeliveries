@@ -28,6 +28,8 @@ import java.util.*;
  */
 public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAPI {
 
+    private static CozyDeliveries instance;
+
     private @Nullable Configuration config;
     private @Nullable Database database;
 
@@ -38,6 +40,9 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
     @Override
     public void onCozyEnable() {
+
+        // Setup instance.
+        CozyDeliveries.instance = this;
 
         // Initialize the configuration file.
         this.config = ConfigurationFactory.YAML.create(
@@ -180,13 +185,6 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
      * @return The optional instance of the api.
      */
     public static @NotNull Optional<CozyDeliveriesAPI> getAPI() {
-
-        // Get the instance of the plugin.
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("CozyDeliveries");
-
-        // Check if it doesn't exist.
-        if (plugin == null) return Optional.empty();
-        if (plugin instanceof CozyDeliveries) return Optional.of((CozyDeliveries) plugin);
-        return Optional.empty();
+        return Optional.of(CozyDeliveries.instance);
     }
 }

@@ -2,6 +2,7 @@ package com.github.cozyplugins.cozydeliveries;
 
 import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
+import com.github.cozyplugins.cozylibrary.dependency.PlaceholderAPIDependency;
 import com.github.cozyplugins.cozylibrary.indicator.ConfigurationConvertable;
 import com.github.cozyplugins.cozylibrary.indicator.Replicable;
 import com.github.cozyplugins.cozylibrary.indicator.Savable;
