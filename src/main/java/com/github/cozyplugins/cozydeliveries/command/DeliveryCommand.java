@@ -53,7 +53,6 @@ public class DeliveryCommand implements CommandType {
 
     @Override
     public @Nullable CommandStatus onPlayer(@NotNull PlayerUser user, @NotNull ConfigurationSection section, @NotNull CommandArguments arguments) {
-        user.sendMessage(section.getString("opening_inventory", "&7Opening the delivery inventory..."));
         new DeliveryInventory(user.getUuid(), section.getSection("inventory")).open(user.getPlayer());
         return new CommandStatus();
     }

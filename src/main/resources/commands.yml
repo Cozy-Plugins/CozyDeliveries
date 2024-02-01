@@ -1,7 +1,6 @@
 deliveries:
   type: "deliveries"
   name: "deliveries"
-  opening_inventory: "&7Opening the delivery inventory..."
   inventory:
     title: "&8&lDeliveries"
     slots: [
