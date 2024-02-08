@@ -13,6 +13,8 @@ import com.github.smuddgge.squishydatabase.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.*;
 
 /**
@@ -24,7 +26,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     private @NotNull UUID toPlayerUuid;
     private @Nullable String fromName;
     private @NotNull Long timeStampMillis;
-
+    private @NotNull Long timeStampExpire;
     private @NotNull DeliveryContent deliveryContent;
 
     /**
@@ -36,8 +38,9 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     public Delivery(@NotNull UUID toPlayerUuid, @NotNull Long timeStampMillis) {
         this.uuid = UUID.randomUUID();
         this.toPlayerUuid = toPlayerUuid;
-        this.deliveryContent = new DeliveryContent();
         this.timeStampMillis = timeStampMillis;
+        this.timeStampExpire = -1L;
+        this.deliveryContent = new DeliveryContent();
     }
 
     /**
@@ -79,8 +82,38 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         return this.fromName == null ? alternative : this.fromName;
     }
 
-    public @NotNull Long getTimeStampMillis() {
+    /**
+     * Used to get the time stamp that
+     * the delivery was sent.
+     *
+     * @return The time stamp it was sent.
+     */
+    public long getTimeStampMillis() {
         return this.timeStampMillis;
+    }
+
+    /**
+     * Used to get the time stamp which this
+     * delivery will expire.
+     * This defaults to -1 for no delivery expire.
+     *
+     * @return The time stamp the delivery
+     * will expire.
+     */
+    public long getTimeStampExpire() {
+        return this.timeStampExpire;
+    }
+
+    /**
+     * Used to get the expired time formatted
+     * as hours, minutes and seconds.
+     *
+     * @return The formatted expired time.
+     */
+    public @NotNull String getExpireTimeFormatted() {
+        if (!this.hasExpireDate()) return "None";
+        Duration duration = Duration.ofMillis(this.getTimeStampExpire() - System.currentTimeMillis());
+        return duration.toHours() + "h " + duration.toMinutesPart() + "m " + duration.toSecondsPart() + "s ";
     }
 
     /**
@@ -130,6 +163,17 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     }
 
     /**
+     * Used to set when the delivery should expire.
+     *
+     * @param timeStampExpire The time stamp for when the delivery should expire.
+     * @return This instance.
+     */
+    public @NotNull Delivery setTimeStampExpire(@NotNull Long timeStampExpire) {
+        this.timeStampExpire = timeStampExpire;
+        return this;
+    }
+
+    /**
      * Used to set the bundle of rewards to a specific
      * instance.
      *
@@ -139,6 +183,28 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     public @NotNull Delivery setDeliveryContent(@NotNull DeliveryContent deliveryContent) {
         this.deliveryContent = deliveryContent;
         return this;
+    }
+
+    /**
+     * Used to check if the delivery should
+     * expire.
+     *
+     * @return True if the delivery should expire.
+     */
+    public boolean hasExpireDate() {
+        return this.timeStampExpire > -1L;
+    }
+
+    /**
+     * Used to check if the delivery has expired.
+     * Normally using the get methods in the api,
+     * they will already be removed from a database
+     * before returning the deliveries if expired.
+     *
+     * @return True if the delivery has expired.
+     */
+    public boolean hasExpired() {
+        return System.currentTimeMillis() > this.timeStampExpire;
     }
 
     /**

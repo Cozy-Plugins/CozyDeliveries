@@ -65,6 +65,8 @@ public interface CozyDeliveriesAPI {
      * Used to get the instance of a specific delivery
      * from the database.
      * This will also check if the database is enabled.
+     * If the delivery is expired it will return an empty
+     * optional and remove it from the database.
      *
      * @param uuid The delivery's identifier.
      * @return The optional delivery.
@@ -77,6 +79,8 @@ public interface CozyDeliveriesAPI {
      * Be careful using this method as it interacts
      * with the database.
      * This will also check if the database is enabled.
+     * If the delivery is expired it removes it from the
+     * database and this list.
      *
      * @return The list of deliveries.
      * Empty list if the database is disabled.
@@ -86,6 +90,8 @@ public interface CozyDeliveriesAPI {
     /**
      * Used to get a player's list of deliveries.
      * This will also check if the database is enabled.
+     * If the delivery is expired it removes it from the
+     * database and this list.
      *
      * @param playerUuid The player's uuid.
      * @return The list of deliveries that has
@@ -121,4 +127,21 @@ public interface CozyDeliveriesAPI {
      * @return True if the delivery was sent.
      */
     boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull List<CozyItem> itemList);
+
+    /**
+     * Used to remove a delivery from the database
+     * if it is expired.
+     *
+     * @param delivery The instance of the delivery.
+     * @return The optional delivery if it hasn't expired.
+     */
+    @NotNull Optional<Delivery> removeIfExpired(@NotNull Delivery delivery);
+
+    /**
+     * Removes the expired deliveries from the database.
+     *
+     * @param deliveryList The list of deliveries.
+     * @return The deliveries that have not expired.
+     */
+    @NotNull List<Delivery> removeExpiredDeliveries(@NotNull List<Delivery> deliveryList);
 }

@@ -10,6 +10,7 @@ import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -59,6 +60,7 @@ public class DeliveryInventory extends InventoryInterface {
                     .setLore(section.getAdaptedString("lore", "\n", "&7Click to collect delivery.\n&7\n&e&lContent\n&f{lore}")
                             .replace("{lore}", String.join("\n&f", delivery.getDeliveryContent().getLoreNotEmpty()))
                             .replace("{from}", delivery.getFromName("None"))
+                            .replace("{expire}", delivery.getExpireTimeFormatted())
                             .split("\n")
                     )
                     .addSlot(slotIterator.next())

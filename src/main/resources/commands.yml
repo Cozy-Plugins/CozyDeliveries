@@ -19,6 +19,7 @@ deliveries:
       - "&f{lore}"
       - "&7"
       - "&7From {from}"
+      - "&7Expires in &f{expire}"
     inventory_space: "&7You dont have enough inventory space to collect this delivery."
     success: "&7You have received a delivery."
     ailed: "&7Failed to receive a delivery."

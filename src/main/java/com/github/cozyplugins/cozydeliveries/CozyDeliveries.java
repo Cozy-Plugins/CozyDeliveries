@@ -157,8 +157,12 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
                 .getTable(DeliveryTable.class)
                 .getFirstRecord(new Query().match("uuid", uuid.toString()));
 
+        // Check if the record doesn't exist.
         if (record == null) return Optional.empty();
-        return Optional.of(record.getDelivery());
+
+        // Check if the delivery is expired.
+        Delivery delivery = this.removeIfExpired(record.getDelivery()).orElse(null);
+        return Optional.ofNullable(delivery);
     }
 
     @Override
@@ -167,11 +171,14 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         // Check if the database is disabled.
         if (this.getDatabase().isDisabled()) return new ArrayList<>();
 
-        return this.getDatabase()
+        // Get the list of deliveries.
+        List<Delivery> deliveryList = this.getDatabase()
                 .getTable(DeliveryTable.class)
                 .getRecordList()
                 .stream().map(DeliveryRecord::getDelivery)
                 .toList();
+
+        return this.removeExpiredDeliveries(deliveryList);
     }
 
     @Override
@@ -180,12 +187,14 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         // Check if the database is disabled.
         if (this.getDatabase().isDisabled()) return new ArrayList<>();
 
-        List<DeliveryRecord> deliveryRecordList = this.getDatabase()
+        // Get the list of deliveries.
+        List<Delivery> deliveryList = this.getDatabase()
                 .getTable(DeliveryTable.class)
-                .getRecordList(new Query().match("toPlayerUuid", playerUuid.toString()));
+                .getRecordList(new Query().match("toPlayerUuid", playerUuid.toString()))
+                .stream().map(DeliveryRecord::getDelivery)
+                .toList();
 
-        return deliveryRecordList == null ? new ArrayList<>()
-                : deliveryRecordList.stream().map(DeliveryRecord::getDelivery).toList();
+        return this.removeExpiredDeliveries(deliveryList);
     }
 
     @Override
@@ -219,6 +228,37 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         delivery.setDeliveryContent(new DeliveryContent().addItems(itemList));
 
         return this.sendDelivery(delivery);
+    }
+
+    @Override
+    public @NotNull Optional<Delivery> removeIfExpired(@NotNull Delivery delivery) {
+        List<Delivery> list = this.removeExpiredDeliveries(List.of(delivery));
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public @NotNull List<Delivery> removeExpiredDeliveries(@NotNull List<Delivery> deliveryList) {
+        List<Delivery> list = new ArrayList<>(deliveryList);
+
+        // The list of expired deliveries.
+        List<Delivery> toRemove = new ArrayList<>();
+
+        // Remove expired deliveries.
+        for (Delivery delivery : list) {
+            if (!delivery.hasExpired()) continue;
+            toRemove.add(delivery);
+
+            // Remove the delivery from the database.
+            if (this.getDatabase().isDisabled()) continue;
+
+            // Remove the record from the database.
+            this.getDatabase()
+                    .getTable(DeliveryTable.class)
+                    .removeRecord(new DeliveryRecord(delivery));
+        }
+
+        list.removeAll(toRemove);
+        return list;
     }
 
     private void sendDelivery0(@NotNull DeliverySendEvent event) {
