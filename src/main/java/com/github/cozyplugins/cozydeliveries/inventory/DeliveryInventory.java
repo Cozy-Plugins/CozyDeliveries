@@ -60,8 +60,8 @@ public class DeliveryInventory extends InventoryInterface {
                     .setMaterial(Material.valueOf(section.getString("material", "BARREL").toUpperCase()))
                     .setCustomModelData(section.getInteger("custom_model_data", 0))
                     .setName(section.getString("name", "&6&lDelivery"))
-                    .setLore(section.getAdaptedString("lore", "\n", "&7Click to collect")
-                            .replace("{content}", delivery.getContenceString().replace(", ", "\n&f"))
+                    .setLore(section.getAdaptedString("lore", "\n", "&7Click to collect delivery.\n&7\n&e&lContent\n&f{lore}")
+                            .replace("{lore}", String.join("\n&f", delivery.getDeliveryContent().getLore()))
                             .replace("{from}", delivery.getFromName("None"))
                             .split("\n")
                     )
@@ -77,7 +77,7 @@ public class DeliveryInventory extends InventoryInterface {
                         }
 
                         // Give the delivery to the player.
-                        boolean success = delivery.give(user);
+                        boolean success = delivery.giveAndDelete(user);
                         if (success) {
                             user.sendMessage(section.getAdaptedString(
                                     "success", "\n", "&7You have received a delivery."

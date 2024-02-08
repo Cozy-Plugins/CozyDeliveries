@@ -1,3 +1,12 @@
+#  _____       _ _                _
+# |  __ \     | (_)              (_)
+# | |  | | ___| |___   _____ _ __ _  ___  ___
+# | |  | |/ _ \ | \ \ / / _ \ '__| |/ _ \/ __|
+# | |__| |  __/ | |\ V /  __/ |  | |  __/\__ \
+# |_____/ \___|_|_| \_/ \___|_|  |_|\___||___/
+#
+# Author: Smudge
+
 currency: "{number} coins"
 
 database:
@@ -16,18 +25,50 @@ delivery:
   # This can be a list of strings.
   # You can use the placeholder {sender} to get the sender's name.
   receive_message: "&7You have received a delivery from &f{sender}&7. &e/deliveries &7to see your deliveries."
+  # This lore will be used as default for
+  # deliveries and will be seen in the delivery menu.
+  default_lore:
+    format:
+      - "{money}"
+      - "{items}"
+      - "{commands}"
+    money:
+      - "&7Money &a{money}"
+    items:
+      format:
+        - "&7Items"
+        - "{items}"
+      items:
+        - "&7- &f{item}"
+    commands:
+      format:
+        - "&7Commands"
+        - "{commands}"
+      commands:
+        - "&7- &f{command}"
 
 first_join:
+  # If the player should receive a delivery
+  # when they first join the server.
   enabled: true
-  items:
-    1:
-      material: WOODEN_SWORD
-    2:
-      material: WOODEN_PICKAXE
-    3:
-      material: WOODEN_AXE
-    4:
-      material: WOODEN_SHOVEL
-    5:
-      material: STEAK
-      amount: 10
+
+  # The instance of the delivery.
+  delivery_content:
+    lore:
+      - "&7- &fWooden Sword"
+      - "&7- &fWooden Pickaxe"
+      - "&7- &fWooden Axe"
+      - "&7- &fWooden Shovel"
+      - "&7- &e10x &fSteak"
+    items:
+      1:
+        material: WOODEN_SWORD
+      2:
+        material: WOODEN_PICKAXE
+      3:
+        material: WOODEN_AXE
+      4:
+        material: WOODEN_SHOVEL
+      5:
+        material: COOKED_BEEF
+        amount: 10

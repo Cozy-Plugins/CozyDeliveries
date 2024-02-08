@@ -2,11 +2,9 @@ package com.github.cozyplugins.cozydeliveries;
 
 import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
-import com.github.cozyplugins.cozylibrary.dependency.PlaceholderAPIDependency;
 import com.github.cozyplugins.cozylibrary.indicator.ConfigurationConvertable;
 import com.github.cozyplugins.cozylibrary.indicator.Replicable;
 import com.github.cozyplugins.cozylibrary.indicator.Savable;
-import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.cozyplugins.cozylibrary.reward.RewardBundle;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
@@ -26,15 +24,19 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     private @NotNull UUID toPlayerUuid;
     private @Nullable String fromName;
     private @NotNull Long timeStampMillis;
-    private @NotNull RewardBundle bundle;
+
+    private @NotNull DeliveryContent deliveryContent;
 
     /**
      * Used to create a new instance of a delivery.
+     *
+     * @param toPlayerUuid The player it will be delivered to.
+     * @param timeStampMillis The time stamp it was sent to the player.
      */
     public Delivery(@NotNull UUID toPlayerUuid, @NotNull Long timeStampMillis) {
         this.uuid = UUID.randomUUID();
         this.toPlayerUuid = toPlayerUuid;
-        this.bundle = new RewardBundle();
+        this.deliveryContent = new DeliveryContent();
         this.timeStampMillis = timeStampMillis;
     }
 
@@ -87,39 +89,8 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      *
      * @return The reward bundle.
      */
-    public @NotNull RewardBundle getBundle() {
-        return this.bundle;
-    }
-
-    /**
-     * Used to get the content of the delivery as a list of strings.
-     *
-     * @return The content as a string.
-     */
-    public @NotNull String getContenceString() {
-
-        // Add the items.
-        List<String> content = new java.util.ArrayList<>(this.bundle.getItemList().stream()
-                .map(item -> {
-                    if (item.getName().isEmpty()) return item.getMaterial().toString()
-                            .toLowerCase().replace("_", " ") + " &ex" + item.getAmount();
-                    return item.getName() + " &ex" + item.getAmount();
-                })
-                .toList()
-        );
-
-        if (this.bundle.getMoney() != 0) {
-            content.add(CozyDeliveries.getAPI().orElseThrow().getConfiguration()
-                    .getString("currency", "{number} coins")
-                    .replace("{number}", Double.toString(this.bundle.getMoney()))
-            );
-        }
-
-        if (!this.bundle.getCommandList().isEmpty()) {
-            content.addAll(this.bundle.getCommandList());
-        }
-
-        return String.join(", ", content);
+    public @NotNull DeliveryContent getDeliveryContent() {
+        return this.deliveryContent;
     }
 
     /**
@@ -162,34 +133,33 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      * Used to set the bundle of rewards to a specific
      * instance.
      *
-     * @param bundle The instance of a reward bundle.
+     * @param deliveryContent The instance of a delivery content.
      * @return This instance.
      */
-    public @NotNull Delivery setBundle(@NotNull RewardBundle bundle) {
-        this.bundle = bundle;
+    public @NotNull Delivery setDeliveryContent(@NotNull DeliveryContent deliveryContent) {
+        this.deliveryContent = deliveryContent;
         return this;
     }
 
     /**
-     * Used to check if a user has enough inventory space to obtain the delivery.
+     * Used to check if a user has enough inventory space to
+     * obtain the delivery.
      *
      * @param user The instance of the user.
      * @return True if they have enough room.
      */
     public boolean hasInventorySpace(@NotNull PlayerUser user) {
-        int itemAmount = this.bundle.getItemList().size();
-        return itemAmount <= Arrays.stream(user.getPlayer().getInventory().getContents())
-                .filter(Objects::isNull).toList().size();
+        return this.deliveryContent.hasInventorySpace(user);
     }
 
     /**
-     * USed to delete the delivery from the
+     * Used to delete the delivery from the
      * database and then give it to a user.
      *
      * @param user The instance of the user.
      * @return True if successful.
      */
-    public boolean give(@NotNull PlayerUser user) {
+    public boolean giveAndDelete(@NotNull PlayerUser user) {
 
         // Remove the record from the database.
         boolean success = CozyDeliveries.getAPI().orElseThrow().getDatabase()
@@ -197,8 +167,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
                 .removeAllRecords(new Query().match("uuid", this.uuid.toString()));
 
         if (!success) return false;
-        this.bundle.giveRewardBundle(user);
-        return true;
+        return this.deliveryContent.give(user);
     }
 
     @Override
@@ -208,7 +177,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         section.set("to_player_uuid", this.toPlayerUuid.toString());
         section.set("from_name", this.fromName);
         section.set("time_stamp_millis", this.timeStampMillis);
-        section.set("package", this.bundle.convert().getMap());
+        section.set("content", this.deliveryContent.convert().getMap());
 
         return section;
     }
@@ -219,7 +188,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         this.toPlayerUuid = UUID.fromString(section.getString("to_player_uuid"));
         this.fromName = section.getString("from_name");
         this.timeStampMillis = section.getLong("time_stamp_millis");
-        this.bundle = new RewardBundle().convert(section.getSection("package"));
+        this.deliveryContent = new DeliveryContent().convert(section.getSection("content"));
 
         return this;
     }

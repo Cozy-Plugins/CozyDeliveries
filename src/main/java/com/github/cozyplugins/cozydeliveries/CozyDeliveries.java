@@ -167,7 +167,7 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     public boolean sendDelivery(@NotNull UUID playerUuid, @Nullable String fromName, @NotNull List<CozyItem> itemList) {
         Delivery delivery = new Delivery(playerUuid, System.currentTimeMillis());
         delivery.setFromName(fromName);
-        delivery.setBundle(new RewardBundle().setItemList(itemList));
+        delivery.setDeliveryContent(new DeliveryContent().addItems(itemList));
 
         return this.sendDelivery(delivery);
     }
@@ -194,11 +194,12 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         if (!this.getConfiguration().getBoolean("first_join.enabled")) return;
 
         // Convert to a bundle.
-        RewardBundle bundle = new RewardBundle().convert(this.getConfiguration().getSection("first_join"));
 
         // Create the delivery.
         Delivery delivery = new Delivery(event.getPlayer().getUniqueId(), System.currentTimeMillis());
-        delivery.setBundle(bundle);
+        delivery.setDeliveryContent(new DeliveryContent()
+                .convert(this.getConfiguration().getSection("first_join.delivery_content"))
+        );
         delivery.setFromName("Server");
 
         // Send delivery.
