@@ -1,19 +1,15 @@
 package com.github.cozyplugins.cozydeliveries.inventory;
 
 import com.github.cozyplugins.cozydeliveries.CozyDeliveries;
-import com.github.cozyplugins.cozydeliveries.Delivery;
+import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozylibrary.inventory.InventoryInterface;
 import com.github.cozyplugins.cozylibrary.inventory.InventoryItem;
 import com.github.cozyplugins.cozylibrary.inventory.action.action.ClickAction;
-import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;

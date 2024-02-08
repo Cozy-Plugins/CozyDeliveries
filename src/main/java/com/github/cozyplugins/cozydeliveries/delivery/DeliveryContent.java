@@ -1,5 +1,6 @@
-package com.github.cozyplugins.cozydeliveries;
+package com.github.cozyplugins.cozydeliveries.delivery;
 
+import com.github.cozyplugins.cozydeliveries.CozyDeliveries;
 import com.github.cozyplugins.cozylibrary.indicator.Replicable;
 import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;

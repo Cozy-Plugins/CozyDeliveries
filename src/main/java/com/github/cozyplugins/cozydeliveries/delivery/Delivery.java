@@ -1,11 +1,11 @@
-package com.github.cozyplugins.cozydeliveries;
+package com.github.cozyplugins.cozydeliveries.delivery;
 
+import com.github.cozyplugins.cozydeliveries.CozyDeliveries;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
 import com.github.cozyplugins.cozylibrary.indicator.ConfigurationConvertable;
 import com.github.cozyplugins.cozylibrary.indicator.Replicable;
 import com.github.cozyplugins.cozylibrary.indicator.Savable;
-import com.github.cozyplugins.cozylibrary.reward.RewardBundle;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;

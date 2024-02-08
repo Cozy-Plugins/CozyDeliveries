@@ -1,5 +1,6 @@
 package com.github.cozyplugins.cozydeliveries;
 
+import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.smuddgge.squishyconfiguration.interfaces.Configuration;
 import com.github.smuddgge.squishydatabase.interfaces.Database;

@@ -7,7 +7,7 @@
 #
 # Author: Smudge
 
-delivery_identifier:
+event_identifier:
   # Represents a type of delivery that
   # will be sent to players.
 

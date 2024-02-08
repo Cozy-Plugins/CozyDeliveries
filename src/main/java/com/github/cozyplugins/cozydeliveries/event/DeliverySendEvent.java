@@ -1,6 +1,6 @@
 package com.github.cozyplugins.cozydeliveries.event;
 
-import com.github.cozyplugins.cozydeliveries.Delivery;
+import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

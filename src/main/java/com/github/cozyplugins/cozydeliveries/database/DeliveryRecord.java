@@ -1,6 +1,6 @@
 package com.github.cozyplugins.cozydeliveries.database;
 
-import com.github.cozyplugins.cozydeliveries.Delivery;
+import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
 import com.github.smuddgge.squishydatabase.record.Field;
 import com.github.smuddgge.squishydatabase.record.Record;
