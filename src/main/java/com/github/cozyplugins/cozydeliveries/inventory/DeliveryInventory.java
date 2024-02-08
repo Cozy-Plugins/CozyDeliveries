@@ -61,7 +61,7 @@ public class DeliveryInventory extends InventoryInterface {
                     .setCustomModelData(section.getInteger("custom_model_data", 0))
                     .setName(section.getString("name", "&6&lDelivery"))
                     .setLore(section.getAdaptedString("lore", "\n", "&7Click to collect delivery.\n&7\n&e&lContent\n&f{lore}")
-                            .replace("{lore}", String.join("\n&f", delivery.getDeliveryContent().getLore()))
+                            .replace("{lore}", String.join("\n&f", delivery.getDeliveryContent().getLoreNotEmpty()))
                             .replace("{from}", delivery.getFromName("None"))
                             .split("\n")
                     )
