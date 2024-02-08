@@ -38,7 +38,8 @@ public class DeliveryCommand implements CommandType {
     @Override
     public @Nullable CommandTypePool getSubCommandTypes() {
         return new CommandTypePool()
-                .append(new DeliverySendCommand());
+                .append(new DeliverySendCommand())
+                .append(new DeliveryReloadCommand());
     }
 
     @Override

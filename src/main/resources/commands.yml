@@ -23,6 +23,11 @@ deliveries:
     success: "&7You have received a delivery."
     ailed: "&7Failed to receive a delivery."
 
+  reload:
+    name: "reload"
+    permission: "deliveries.reload"
+    message: "&7&l> &7Reloaded configuration and commands."
+
   send:
     name: "send"
     incorrect_arguments: "&7Incorrect arguments. &e/deliveries send <collection> <player>"
