@@ -19,9 +19,6 @@ event_identifier:
   # How often to send the delivery.
   cooldown_seconds: 86400 # 1 day in seconds.
 
-  # How long the delivery should be available for.
-  remove_after_seconds: 172800 # 2 days in seconds.
-
   # The number of deliveries to send.
   amount: 1
 
@@ -30,4 +27,7 @@ event_identifier:
   # and the second is the chance of it being picked.
   deliveries:
     - "content_identifier 0.5"
+
+  # How long the deliveries should be available for.
+  remove_after_seconds: 172800 # 2 days in seconds.
 

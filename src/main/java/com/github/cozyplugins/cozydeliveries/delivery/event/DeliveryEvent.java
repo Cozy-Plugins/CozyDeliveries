@@ -31,6 +31,25 @@ public class DeliveryEvent implements ConfigurationConvertable<DeliveryEvent>, R
     }
 
     /**
+     * Used to get the delivery event's identifier.
+     *
+     * @return Teh delivery event identifier.
+     */
+    public @NotNull String getIdentifier() {
+        return this.identifier;
+    }
+
+    /**
+     * Used to get the delivery configuration
+     * section.
+     *
+     * @return The delivery configuration section.
+     */
+    public @NotNull ConfigurationSection getConfigurationSection() {
+        return this.section;
+    }
+
+    /**
      * Used to get the event type used
      * in this event.
      * This can be used to get the event handler.

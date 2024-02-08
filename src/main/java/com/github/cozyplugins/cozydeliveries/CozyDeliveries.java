@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -275,6 +276,16 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
                 .getAdaptedString("delivery.receive_message", "\n", "&7You have received a delivery from &f{sender}")
                 .replace("{sender}", event.getDelivery().getFromName("null"))
         );
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        this.getEventConfiguration().onPlayerJoinEvent(event);
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerKickEvent event) {
+        this.getEventConfiguration().onPlayerLeaveEvent(event);
     }
 
     @EventHandler

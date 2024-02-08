@@ -47,6 +47,12 @@ delivery:
       commands:
         - "&7- &f{command}"
 
+events:
+  # The amount of time to wait in ticks
+  # before checking if the players cooldown
+  # for an event has ended.
+  cooldown_check_ticks: 500
+
 first_join:
   # If the player should receive a delivery
   # when they first join the server.
