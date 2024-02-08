@@ -1,6 +1,6 @@
 package com.github.cozyplugins.cozydeliveries.configuration;
 
-import com.github.cozyplugins.cozydeliveries.delivery.DeliveryEvent;
+import com.github.cozyplugins.cozydeliveries.delivery.event.DeliveryEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -18,7 +18,7 @@ public class EventConfigurationDirectory extends CozyDeliveriesConfigurationDire
 
     @Override
     public @NotNull DeliveryEvent createEmpty(@NotNull String identifier) {
-        return new DeliveryEvent();
+        return new DeliveryEvent(identifier);
     }
 
     @Override

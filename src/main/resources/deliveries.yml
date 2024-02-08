@@ -22,6 +22,9 @@ event_identifier:
   # How long the delivery should be available for.
   remove_after_seconds: 172800 # 2 days in seconds.
 
+  # The number of deliveries to send.
+  amount: 1
+
   # A list of the possible deliveries to choose from.
   # The first string should be the content identifier,
   # and the second is the chance of it being picked.

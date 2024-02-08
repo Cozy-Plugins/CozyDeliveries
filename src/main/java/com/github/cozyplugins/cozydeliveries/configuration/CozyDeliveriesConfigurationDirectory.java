@@ -2,10 +2,9 @@ package com.github.cozyplugins.cozydeliveries.configuration;
 
 import com.github.cozyplugins.cozydeliveries.CozyDeliveries;
 import com.github.cozyplugins.cozylibrary.configuration.ConfigurationDirectory;
-import com.github.cozyplugins.cozylibrary.indicator.ConfigurationConvertable;
 import com.github.smuddgge.squishyconfiguration.implementation.YamlConfiguration;
+import com.github.smuddgge.squishyconfiguration.indicator.ConfigurationConvertable;
 import com.github.smuddgge.squishyconfiguration.interfaces.Configuration;
-import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +12,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Represents a configuration directory in this plugin.

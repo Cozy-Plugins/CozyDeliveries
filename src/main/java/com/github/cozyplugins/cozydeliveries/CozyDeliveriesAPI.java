@@ -1,5 +1,7 @@
 package com.github.cozyplugins.cozydeliveries;
 
+import com.github.cozyplugins.cozydeliveries.configuration.ContentConfigurationDirectory;
+import com.github.cozyplugins.cozydeliveries.configuration.EventConfigurationDirectory;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.smuddgge.squishyconfiguration.interfaces.Configuration;
@@ -39,8 +41,30 @@ public interface CozyDeliveriesAPI {
     @NotNull Database getDatabase();
 
     /**
+     * Used to get the instance of the content
+     * configuration directory.
+     * This can be used to get the instance of
+     * defined delivery content in the plugin.
+     *
+     * @return The content configuration directory.
+     */
+    @NotNull ContentConfigurationDirectory getContentConfiguration();
+
+    /**
+     * Used to get the instance of the event
+     * configuration directory.
+     * This contains all the events that will occur on
+     * the server regarding deliveries.
+     * For example, daily deliveries.
+     *
+     * @return The event configuration directory.
+     */
+    @NotNull EventConfigurationDirectory getEventConfiguration();
+
+    /**
      * Used to get the instance of a specific delivery
      * from the database.
+     * This will also check if the database is enabled.
      *
      * @param uuid The delivery's identifier.
      * @return The optional delivery.
@@ -48,11 +72,25 @@ public interface CozyDeliveriesAPI {
     @NotNull Optional<Delivery> getDelivery(@NotNull UUID uuid);
 
     /**
+     * Used to get the list of all the
+     * deliveries.
+     * Be careful using this method as it interacts
+     * with the database.
+     * This will also check if the database is enabled.
+     *
+     * @return The list of deliveries.
+     * Empty list if the database is disabled.
+     */
+    @NotNull List<Delivery> getDeliveryList();
+
+    /**
      * Used to get a player's list of deliveries.
+     * This will also check if the database is enabled.
      *
      * @param playerUuid The player's uuid.
      * @return The list of deliveries that has
      * been sent to the player.
+     * Empty list if the database is disabled.
      */
     @NotNull List<Delivery> getDeliveryList(@NotNull UUID playerUuid);
 

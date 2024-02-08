@@ -1,6 +1,8 @@
 package com.github.cozyplugins.cozydeliveries;
 
 import com.github.cozyplugins.cozydeliveries.command.DeliveryCommand;
+import com.github.cozyplugins.cozydeliveries.configuration.ContentConfigurationDirectory;
+import com.github.cozyplugins.cozydeliveries.configuration.EventConfigurationDirectory;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
@@ -32,9 +34,10 @@ import java.util.*;
 public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAPI, Listener {
 
     private static CozyDeliveries instance;
-
     private @Nullable Configuration config;
     private @Nullable Database database;
+    private @Nullable ContentConfigurationDirectory contentDirectory;
+    private @Nullable EventConfigurationDirectory eventDirectory;
 
     @Override
     public void onLoad() {
@@ -59,6 +62,12 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
         // Initialize the database.
         this.setupDatabase();
+
+        // Initialize the configuration directory's.
+        this.contentDirectory = new ContentConfigurationDirectory();
+        this.contentDirectory.getDirectory().reload();
+        this.eventDirectory = new EventConfigurationDirectory();
+        this.eventDirectory.getDirectory().reload();
 
         // Register the commands.
         this.addCommandType(new DeliveryCommand());
@@ -117,7 +126,33 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     }
 
     @Override
+    public @NotNull ContentConfigurationDirectory getContentConfiguration() {
+
+        // Check if the configuration directory is null.
+        if (this.contentDirectory == null) throw new RuntimeException(
+                "Tried to get the content configuration but it has not been initialized yet."
+        );
+
+        return this.contentDirectory;
+    }
+
+    @Override
+    public @NotNull EventConfigurationDirectory getEventConfiguration() {
+
+        // Check if the configuration directory is null.
+        if (this.eventDirectory == null) throw new RuntimeException(
+                "Tried to get the event configuration but it has not been initialized yet."
+        );
+
+        return this.eventDirectory;
+    }
+
+    @Override
     public @NotNull Optional<Delivery> getDelivery(@NotNull UUID uuid) {
+
+        // Check if the database is disabled.
+        if (this.getDatabase().isDisabled()) return Optional.empty();
+
         DeliveryRecord record = this.getDatabase()
                 .getTable(DeliveryTable.class)
                 .getFirstRecord(new Query().match("uuid", uuid.toString()));
@@ -127,7 +162,24 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     }
 
     @Override
+    public @NotNull List<Delivery> getDeliveryList() {
+
+        // Check if the database is disabled.
+        if (this.getDatabase().isDisabled()) return new ArrayList<>();
+
+        return this.getDatabase()
+                .getTable(DeliveryTable.class)
+                .getRecordList()
+                .stream().map(DeliveryRecord::getDelivery)
+                .toList();
+    }
+
+    @Override
     public @NotNull List<Delivery> getDeliveryList(@NotNull UUID playerUuid) {
+
+        // Check if the database is disabled.
+        if (this.getDatabase().isDisabled()) return new ArrayList<>();
+
         List<DeliveryRecord> deliveryRecordList = this.getDatabase()
                 .getTable(DeliveryTable.class)
                 .getRecordList(new Query().match("toPlayerUuid", playerUuid.toString()));
@@ -140,9 +192,7 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     public boolean sendDelivery(@NotNull Delivery delivery) {
 
         // Check if the database is disabled.
-        if (this.getDatabase().isDisabled()) {
-            return false;
-        }
+        if (this.getDatabase().isDisabled()) return false;
 
         // Call a delivery send event.
         DeliverySendEvent event = new DeliverySendEvent(delivery);
@@ -191,8 +241,6 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     public void onPlayerFirstJoin(PlayerJoinEvent event) {
         if (event.getPlayer().hasPlayedBefore()) return;
         if (!this.getConfiguration().getBoolean("first_join.enabled")) return;
-
-        // Convert to a bundle.
 
         // Create the delivery.
         Delivery delivery = new Delivery(event.getPlayer().getUniqueId(), System.currentTimeMillis());
