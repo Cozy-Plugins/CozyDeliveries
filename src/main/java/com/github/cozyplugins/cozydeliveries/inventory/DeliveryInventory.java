@@ -53,40 +53,7 @@ public class DeliveryInventory extends InventoryInterface {
 
             // Check if there are any more slots to assign.
             if (!slotIterator.hasNext()) return;
-            this.setItem(new InventoryItem()
-                    .setMaterial(Material.valueOf(section.getString("material", "BARREL").toUpperCase()))
-                    .setCustomModelData(section.getInteger("custom_model_data", 0))
-                    .setName(section.getString("name", "&6&lDelivery"))
-                    .setLore(section.getAdaptedString("lore", "\n", "&7Click to collect delivery.\n&7\n&e&lContent\n&f{lore}")
-                            .replace("{lore}", String.join("\n&f", delivery.getDeliveryContent().getLoreNotEmpty()))
-                            .replace("{from}", delivery.getFromName("None"))
-                            .replace("{expire}", delivery.getExpireTimeFormatted())
-                            .split("\n")
-                    )
-                    .addSlot(slotIterator.next())
-                    .addAction((ClickAction) (user, type, inventory) -> {
-
-                        // Check if they have inventory space.
-                        if (!delivery.hasInventorySpace(user)) {
-                            user.sendMessage(section.getAdaptedString(
-                                    "inventory_space", "\n", "&7You dont have enough inventory space to collect this delivery."
-                            ));
-                            return;
-                        }
-
-                        // Give the delivery to the player.
-                        boolean success = delivery.giveAndDelete(user);
-                        if (success) {
-                            user.sendMessage(section.getAdaptedString(
-                                    "success", "\n", "&7You have received a delivery."
-                            ));
-                            this.onGenerate(user);
-                            return;
-                        }
-
-                        user.sendMessage(section.getAdaptedString("failed", "\n", "&7Failed to receive a delivery."));
-                    })
-            );
+            this.setItem(delivery.getInventoryItem(this::onGenerate).addSlot(slotIterator.next()));
         }
     }
 }

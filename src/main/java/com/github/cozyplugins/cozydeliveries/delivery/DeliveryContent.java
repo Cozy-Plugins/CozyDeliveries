@@ -9,6 +9,7 @@ import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -23,6 +24,7 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
     private int money;
 
     private @NotNull List<String> lore;
+    private @Nullable CozyItem item;
 
     /**
      * Used to create a new instance
@@ -33,6 +35,7 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
         this.commandList = new ArrayList<>();
         this.money = 0;
         this.lore = new ArrayList<>();
+        this.item = null;
     }
 
     /**
@@ -171,6 +174,16 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
     }
 
     /**
+     * Used to get the item that can be used as
+     * the interface for the content.
+     *
+     * @return The instance of the item.
+     */
+    public @Nullable CozyItem getItem() {
+        return this.item;
+    }
+
+    /**
      * Used to add items to the content to give.
      *
      * @param items The instance of the items.
@@ -212,6 +225,19 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
      */
     public @NotNull DeliveryContent setMoney(int money) {
         this.money = money;
+        return this;
+    }
+
+    /**
+     * Used to set the custom item that should
+     * be used as the item interface for this
+     * delivery.
+     *
+     * @param item The custom item.
+     * @return This instance.
+     */
+    public @NotNull DeliveryContent setCustomItem(@NotNull CozyItem item) {
+        this.item = item;
         return this;
     }
 
@@ -266,6 +292,7 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
         section.set("commands", this.commandList);
         section.set("money", this.money);
         section.set("lore", this.lore);
+        section.set("item", this.item == null ? null : this.item.convert());
 
         return section;
     }
@@ -295,6 +322,7 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
         this.commandList = section.getListString("commands", new ArrayList<>());
         this.money = section.getInteger("money", 0);
         this.lore = section.getListString("lore", new ArrayList<>());
+        if (section.getKeys().contains("item")) this.item = new CozyItem().convert(section.getSection("item"));
 
         return this;
     }

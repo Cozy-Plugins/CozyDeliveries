@@ -7,7 +7,7 @@
 #
 # Author: Smudge
 
-event_identifier:
+example_event:
   # Represents a type of delivery that
   # will be sent to players.
 
@@ -26,7 +26,7 @@ event_identifier:
   # The first string should be the content identifier,
   # and the second is the chance of it being picked.
   deliveries:
-    - "content_identifier 0.5"
+    - "example_content 1"
 
   # How long the deliveries should be available for.
   remove_after_seconds: 172800 # 2 days in seconds.

@@ -25,6 +25,21 @@ delivery:
   # This can be a list of strings.
   # You can use the placeholder {sender} to get the sender's name.
   receive_message: "&7You have received a delivery from &f{sender}&7. &e/deliveries &7to see your deliveries."
+  inventory_space: "&7You dont have enough inventory space to collect this delivery."
+  success: "&7You have received a delivery."
+  failed: "&7Failed to receive a delivery."
+  # This item will be used as default.
+  default_item:
+    material: "BARREL"
+    name: "&6&lDelivery"
+    lore:
+      - "&7Click to collect delivery."
+      - "&7"
+      - "&e&lContent"
+      - "&f{lore}"
+      - "&7"
+      - "&7From {from}"
+      - "&7Expires in &f{expire}"
   # This lore will be used as default for
   # deliveries and will be seen in the delivery menu.
   default_lore:

@@ -6,6 +6,9 @@ import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
 import com.github.cozyplugins.cozylibrary.indicator.ConfigurationConvertable;
 import com.github.cozyplugins.cozylibrary.indicator.Replicable;
 import com.github.cozyplugins.cozylibrary.indicator.Savable;
+import com.github.cozyplugins.cozylibrary.inventory.InventoryItem;
+import com.github.cozyplugins.cozylibrary.inventory.action.action.ClickAction;
+import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
@@ -13,7 +16,6 @@ import com.github.smuddgge.squishydatabase.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
 
@@ -41,6 +43,23 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         this.timeStampMillis = timeStampMillis;
         this.timeStampExpire = -1L;
         this.deliveryContent = new DeliveryContent();
+    }
+
+    /**
+     * Represents the interface used when
+     * creating the inventory item for this delivery.
+     * This class will be used to interface with the inventory
+     * and regenerate it when the delivery is given.
+     */
+    public interface RegenerateInventory {
+
+        /**
+         * Called when the inventory should be
+         * regenerated.
+         *
+         * @param user The instance of the player.
+         */
+        void onRegenerate(@NotNull PlayerUser user);
     }
 
     /**
@@ -124,6 +143,68 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      */
     public @NotNull DeliveryContent getDeliveryContent() {
         return this.deliveryContent;
+    }
+
+    /**
+     * Used to create an inventory item
+     * that represents this delivery.
+     * This will include the click action.
+     *
+     * @param regenerateInventory The action that will be run when
+     *                            the inventory should be regenerated.
+     * @return The instance of the inventory item.
+     */
+    public @NotNull InventoryItem getInventoryItem(@NotNull RegenerateInventory regenerateInventory) {
+        return new InventoryItem(this.getInterfaceItem().create())
+                .addAction((ClickAction) (user, type, inventory) -> {
+
+                    // Get the configuration section in the config.yml
+                    ConfigurationSection section = CozyDeliveries.getAPI().orElseThrow()
+                            .getConfiguration().getSection("delivery");
+
+                    // Check if they have inventory space.
+                    if (!this.hasInventorySpace(user)) {
+                        user.sendMessage(section.getAdaptedString(
+                                "inventory_space", "\n", "&7You dont have enough inventory space to collect this delivery."
+                        ));
+                        return;
+                    }
+
+                    // Give the delivery to the player.
+                    boolean success = this.giveAndDelete(user);
+                    if (success) {
+                        user.sendMessage(section.getAdaptedString(
+                                "success", "\n", "&7You have received a delivery."
+                        ));
+                        regenerateInventory.onRegenerate(user);
+                        return;
+                    }
+
+                    user.sendMessage(section.getAdaptedString("failed", "\n", "&7Failed to receive a delivery."));
+                });
+    }
+
+    /**
+     * Used to get the instance of the item to
+     * use in the delivery interfaces.
+     *
+     * @return The instance of the item.
+     */
+    public @NotNull CozyItem getInterfaceItem() {
+
+        // Check if the item is null.
+        // If so return the default item.
+        if (this.getDeliveryContent().getItem() == null) {
+            CozyItem defaultItem = new CozyItem().convert(
+                    CozyDeliveries.getAPI().orElseThrow()
+                            .getConfiguration().getSection("delivery.default_item")
+            );
+
+            return this.parsePlaceholders(defaultItem);
+        }
+
+        // Otherwise use the custom item.
+        return this.parsePlaceholders(this.getDeliveryContent().getItem());
     }
 
     /**
@@ -236,6 +317,44 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
 
         if (!success) return false;
         return this.deliveryContent.give(user);
+    }
+
+    /**
+     * Used to parse the placeholders of an item.
+     *
+     * @param item The item to parse.
+     * @return The parsed placeholders.
+     */
+    public @NotNull CozyItem parsePlaceholders(@NotNull CozyItem item) {
+
+        // Parse name.
+        item.setName(this.parsePlaceholders(item.getName()));
+
+        // Parse lore.
+        if (!item.getLore().isEmpty()) {
+            item.setLore(
+                    this.parsePlaceholders(String.join("\n", item.getLore()))
+                            .split("\n")
+            );
+        }
+
+        return item;
+    }
+
+    /**
+     * The placeholders this will parse include:
+     * <li>{lore}</li>
+     * <li>{from}</li>
+     * <li>{expire}</li>
+     *
+     * @param string The instance of the string.
+     * @return The parsed string.
+     */
+    public @NotNull String parsePlaceholders(@NotNull String string) {
+        return string
+                .replace("{lore}", String.join("\n&f", this.getDeliveryContent().getLoreNotEmpty()))
+                .replace("{from}", this.getFromName("None"))
+                .replace("{expire}", this.getExpireTimeFormatted());
     }
 
     @Override

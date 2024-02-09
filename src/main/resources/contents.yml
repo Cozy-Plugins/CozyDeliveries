@@ -7,10 +7,28 @@
 #
 # Author: Smudge
 
-content_identifier:
-  # Represents some delivery content.
-  # The lore seen on the item.
+example_content:
+  # The interface item to use.
+  item:
+    material: "BARREL"
+    name: "&f&lExample Delivery"
+    lore:
+      - "&7Click to collect delivery."
+      - "&7"
+      - "&e&lContent"
+      - "&f{lore}"
+      - "&7"
+      - "&7From {from}"
+      - "&7Expires in &f{expire}"
   lore:
     - "&7- &a100 coins"
-  # The amount of money to give the player.
+    - "&7- &aEnable &f/fly"
+    - "&7- &6&lOld Sword"
+  # What to give to the player
+  # when they collect it.
   money: 100
+  command: "fly"
+  items:
+    1:
+      material: WOODEN_SWORD
+      name: "&6&lOld Sword"
