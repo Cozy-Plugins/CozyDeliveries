@@ -10,6 +10,8 @@ import com.github.cozyplugins.cozydeliveries.delivery.event.handler.StandardDeli
 import com.github.cozyplugins.cozydeliveries.task.TaskContainer;
 import com.github.cozyplugins.cozylibrary.CozyPlugin;
 import com.github.smuddgge.squishydatabase.Query;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -39,11 +41,29 @@ public class CooldownDeliveryEventType implements DeliveryEventType {
         BukkitScheduler scheduler = CozyPlugin.getPlugin().getServer().getScheduler();
         BukkitTask task = scheduler.runTaskTimer(
                 CozyPlugin.getPlugin(),
-                () -> this.checkForDeliveryCooldown(
-                        event.getPlayer().getUniqueId(),
-                        deliveryEvent.getIdentifier(),
-                        deliveryEvent
-                ),
+                () -> {
+
+                    // Check the player is still online.
+                    if (!Bukkit.getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .toList()
+                            .contains(event.getPlayer().getName())) {
+
+                        // Stop the task.
+                        TaskContainer.getInstance().stopTask(
+                                this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier())
+                        );
+
+                        return;
+                    }
+
+                    // Check for delivery cooldown.
+                    this.checkForDeliveryCooldown(
+                            event.getPlayer().getUniqueId(),
+                            deliveryEvent.getIdentifier(),
+                            deliveryEvent
+                    );
+                },
                 cooldown, cooldown
         );
 

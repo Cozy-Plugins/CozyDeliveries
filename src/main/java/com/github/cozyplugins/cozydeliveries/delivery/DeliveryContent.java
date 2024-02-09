@@ -7,6 +7,7 @@ import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.indicator.ConfigurationConvertable;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
+import com.google.gson.Gson;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -236,7 +237,7 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
      * @param item The custom item.
      * @return This instance.
      */
-    public @NotNull DeliveryContent setCustomItem(@NotNull CozyItem item) {
+    public @NotNull DeliveryContent setCustomItem(@Nullable CozyItem item) {
         this.item = item;
         return this;
     }
@@ -292,7 +293,7 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
         section.set("commands", this.commandList);
         section.set("money", this.money);
         section.set("lore", this.lore);
-        section.set("item", this.item == null ? null : this.item.convert());
+        section.set("item", this.item == null ? null : this.item.convert().getMap());
 
         return section;
     }
@@ -322,13 +323,15 @@ public class DeliveryContent implements ConfigurationConvertable<DeliveryContent
         this.commandList = section.getListString("commands", new ArrayList<>());
         this.money = section.getInteger("money", 0);
         this.lore = section.getListString("lore", new ArrayList<>());
-        if (section.getKeys().contains("item")) this.item = new CozyItem().convert(section.getSection("item"));
+        if (section.getKeys().contains("item")) {
+            this.item = new CozyItem().convert(section.getSection("item"));
+        }
 
         return this;
     }
 
     @Override
     public String toString() {
-        return String.join(", ", this.lore);
+        return String.join(", ", this.getLoreNotEmpty());
     }
 }

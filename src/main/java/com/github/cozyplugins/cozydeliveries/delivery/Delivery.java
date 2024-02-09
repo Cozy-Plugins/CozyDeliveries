@@ -13,11 +13,15 @@ import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
 import com.github.smuddgge.squishydatabase.Query;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Represents a delivery to be given to a player.
@@ -79,6 +83,17 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      */
     public @NotNull UUID getToPlayerUuid() {
         return this.toPlayerUuid;
+    }
+
+    /**
+     * Used to get the player's name
+     * that the delivery is being sent to.
+     *
+     * @return The player's name.
+     */
+    public @Nullable String getToPlayerName() {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(this.toPlayerUuid);
+        return player.getName();
     }
 
     /**
@@ -200,7 +215,27 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
                             .getConfiguration().getSection("delivery.default_item")
             );
 
+            // Check if the default item is air.
+            if (defaultItem.getMaterial().equals(Material.AIR)) {
+                CozyDeliveries.getPlugin().getLogger().log(
+                        Level.WARNING,
+                        "Attempted to get the default item, but it returned as material AIR."
+                );
+                return new CozyItem(Material.BARREL);
+            }
+
             return this.parsePlaceholders(defaultItem);
+        }
+
+        // Check if the item is air.
+        if (this.getDeliveryContent().getItem().getMaterial().equals(Material.AIR)) {
+            CozyDeliveries.getPlugin().getLogger().log(
+                    Level.WARNING,
+                    "Attempted to get the item assosicated to {delivery}, but it returned as material AIR."
+                            .replace("{delivery}", this.getDeliveryContent().toString())
+            );
+            this.getDeliveryContent().setCustomItem(null);
+            return this.getInterfaceItem();
         }
 
         // Otherwise use the custom item.
@@ -285,8 +320,6 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      * @return True if the delivery has expired.
      */
     public boolean hasExpired() {
-        System.out.println(this.timeStampExpire);
-        System.out.println(System.currentTimeMillis());
         return this.timeStampExpire < System.currentTimeMillis();
     }
 
@@ -346,15 +379,19 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      * <li>{lore}</li>
      * <li>{from}</li>
      * <li>{expire}</li>
+     * <li>{player}</li>
      *
      * @param string The instance of the string.
      * @return The parsed string.
      */
     public @NotNull String parsePlaceholders(@NotNull String string) {
+        final String playerName = this.getToPlayerName();
+
         return string
                 .replace("{lore}", String.join("\n&f", this.getDeliveryContent().getLoreNotEmpty()))
                 .replace("{from}", this.getFromName("None"))
-                .replace("{expire}", this.getExpireTimeFormatted());
+                .replace("{expire}", this.getExpireTimeFormatted())
+                .replace("{player_name}", playerName == null ? "null" : playerName);
     }
 
     @Override
@@ -363,7 +400,6 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
 
         section.set("to_player_uuid", this.toPlayerUuid.toString());
         section.set("from_name", this.fromName);
-        section.set("time_stamp_millis", this.timeStampMillis);
         section.set("time_stamp_expire_millis", this.timeStampExpire);
         section.set("content", this.deliveryContent.convert().getMap());
 
@@ -375,8 +411,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
 
         this.toPlayerUuid = UUID.fromString(section.getString("to_player_uuid"));
         this.fromName = section.getString("from_name");
-        this.timeStampMillis = section.getLong("time_stamp_millis");
-        this.timeStampExpire = section.getLong("time_stamp_expire_millis");
+        this.timeStampExpire = (long) section.getDouble("time_stamp_expire_millis");
         this.deliveryContent = new DeliveryContent().convert(section.getSection("content"));
 
         return this;

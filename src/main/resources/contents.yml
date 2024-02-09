@@ -27,7 +27,8 @@ example_content:
   # What to give to the player
   # when they collect it.
   money: 100
-  command: "fly"
+  commands:
+  - "fly"
   items:
     1:
       material: WOODEN_SWORD
