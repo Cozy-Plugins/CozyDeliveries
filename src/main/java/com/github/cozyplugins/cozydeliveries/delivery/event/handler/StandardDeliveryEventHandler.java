@@ -140,6 +140,7 @@ public class StandardDeliveryEventHandler implements DeliveryEventHandler {
         for (Map.Entry<String, Double> entry : map.entrySet()) {
             final double value = entry.getValue();
             if (randomPlace < (value + currentPlace)) return entry.getKey();
+            currentPlace += value;
         }
 
         return null;

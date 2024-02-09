@@ -46,8 +46,8 @@ public class DeliveryReloadCommand implements CommandType {
     public @Nullable CommandStatus onUser(@NotNull User user, @NotNull ConfigurationSection section, @NotNull CommandArguments commandArguments) {
 
         CozyDeliveries.getAPI().orElseThrow().getConfiguration().load();
-        CozyDeliveries.getAPI().orElseThrow().getEventConfiguration().onReload();
-        CozyDeliveries.getAPI().orElseThrow().getContentConfiguration().onReload();
+        CozyDeliveries.getAPI().orElseThrow().getEventConfiguration().getDirectory().reload();
+        CozyDeliveries.getAPI().orElseThrow().getContentConfiguration().getDirectory().reload();
         CozyLibrary.getCommandDirectory().reload();
         CozyLibrary.getCommandHandler().unregisterCommands().registerCommands();
 
