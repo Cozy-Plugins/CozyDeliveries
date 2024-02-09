@@ -204,7 +204,9 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
      * @return True if the delivery has expired.
      */
     public boolean hasExpired() {
-        return System.currentTimeMillis() > this.timeStampExpire;
+        System.out.println(this.timeStampExpire);
+        System.out.println(System.currentTimeMillis());
+        return this.timeStampExpire < System.currentTimeMillis();
     }
 
     /**
@@ -243,6 +245,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         section.set("to_player_uuid", this.toPlayerUuid.toString());
         section.set("from_name", this.fromName);
         section.set("time_stamp_millis", this.timeStampMillis);
+        section.set("time_stamp_expire_millis", this.timeStampExpire);
         section.set("content", this.deliveryContent.convert().getMap());
 
         return section;
@@ -254,6 +257,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
         this.toPlayerUuid = UUID.fromString(section.getString("to_player_uuid"));
         this.fromName = section.getString("from_name");
         this.timeStampMillis = section.getLong("time_stamp_millis");
+        this.timeStampExpire = section.getLong("time_stamp_expire_millis");
         this.deliveryContent = new DeliveryContent().convert(section.getSection("content"));
 
         return this;

@@ -40,7 +40,7 @@ public class StandardDeliveryEventHandler implements DeliveryEventHandler {
             delivery.setFromName("Server");
             delivery.setDeliveryContent(content);
 
-            // Check if the delivery should be expire.
+            // Check if the delivery should be expired.
             if (event.getConfigurationSection().getKeys().contains("remove_after_seconds")) {
                 delivery.setTimeStampExpire(
                         System.currentTimeMillis() + (event.getConfigurationSection().getInteger("remove_after_seconds", -1) * 1000L)

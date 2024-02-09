@@ -10,6 +10,7 @@ import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSectio
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -57,9 +58,8 @@ public class DeliveryEvent implements ConfigurationConvertable<DeliveryEvent>, R
      * @return The event type.
      */
     public @NotNull DeliveryEventType getType() {
-        return DeliveryEventType
-                .getEventType(this.section.getString("type", "default"))
-                .orElse(this.getDefaultWithWarning());
+        Optional<DeliveryEventType> optional = DeliveryEventType.getEventType(this.section.getString("type", "default"));
+        return optional.orElseGet(this::getDefaultWithWarning);
     }
 
     private @NotNull DefaultDeliveryEventType getDefaultWithWarning() {

@@ -3,6 +3,7 @@ package com.github.cozyplugins.cozydeliveries;
 import com.github.cozyplugins.cozydeliveries.command.DeliveryCommand;
 import com.github.cozyplugins.cozydeliveries.configuration.ContentConfigurationDirectory;
 import com.github.cozyplugins.cozydeliveries.configuration.EventConfigurationDirectory;
+import com.github.cozyplugins.cozydeliveries.database.CooldownTable;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
 import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
@@ -102,6 +103,7 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         }
 
         this.database.createTable(new DeliveryTable());
+        this.database.createTable(new CooldownTable());
     }
 
     @Override
@@ -246,6 +248,7 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
         // Remove expired deliveries.
         for (Delivery delivery : list) {
+            if (!delivery.hasExpireDate()) continue;
             if (!delivery.hasExpired()) continue;
             toRemove.add(delivery);
 

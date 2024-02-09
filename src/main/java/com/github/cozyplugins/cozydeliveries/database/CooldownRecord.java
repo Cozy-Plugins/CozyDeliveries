@@ -19,6 +19,10 @@ public class CooldownRecord extends Record {
     public @NotNull String eventIdentifier;
     public @NotNull String lastDeliveryTimeStampMillis;
 
+    public CooldownRecord() {
+
+    }
+
     /**
      * Used to create a new player cool down record
      * for a specific event identifier.
