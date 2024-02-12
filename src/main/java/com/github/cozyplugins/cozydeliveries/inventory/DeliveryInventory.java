@@ -66,7 +66,7 @@ public class DeliveryInventory extends InventoryInterface {
                 .orElseThrow().getDeliveryList(this.deliveryPlayerUuid);
 
         // Loop though all the deliveries.
-        Iterator<Integer> slotIterator = section.getListInteger("slots").iterator();
+        Iterator<Integer> slotIterator = section.getListInteger("delivery_slots").iterator();
         for (Delivery delivery : deliveryList) {
 
             // Check if there are any more slots to assign.

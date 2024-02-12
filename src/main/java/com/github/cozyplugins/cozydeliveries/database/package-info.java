@@ -16,30 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.github.cozyplugins.cozydeliveries.configuration;
-
-import com.github.cozyplugins.cozydeliveries.delivery.DeliveryContent;
-import org.jetbrains.annotations.NotNull;
-
 /**
- * Represents the content configuration directory.
+ * Contains classes that contain infomation about
+ * the database tables.
  */
-public class ContentConfigurationDirectory extends CozyDeliveriesConfigurationDirectory<DeliveryContent> {
-
-    /**
-     * Used to create a new event configuration directory instance.
-     */
-    public ContentConfigurationDirectory() {
-        super("contents", "contents.yml");
-    }
-
-    @Override
-    public @NotNull DeliveryContent createEmpty(@NotNull String identifier) {
-        return new DeliveryContent();
-    }
-
-    @Override
-    public void onReload() {
-
-    }
-}
+package com.github.cozyplugins.cozydeliveries.database;

@@ -33,6 +33,10 @@ import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents the reload command.
+ * Reloads the configuration files and commands.
+ */
 public class DeliveryReloadCommand implements CommandType {
 
     @Override
@@ -63,14 +67,17 @@ public class DeliveryReloadCommand implements CommandType {
     @Override
     public @Nullable CommandStatus onUser(@NotNull User user, @NotNull ConfigurationSection section, @NotNull CommandArguments commandArguments) {
 
+        // Reload the configuration files.
         CozyDeliveries.getAPI().orElseThrow().getConfiguration().load();
         CozyDeliveries.getAPI().orElseThrow().getEventConfiguration().getDirectory().reload();
         CozyDeliveries.getAPI().orElseThrow().getContentConfiguration().getDirectory().reload();
         CozyLibrary.getCommandDirectory().reload();
+
+        // Re-register the commands.
         CozyLibrary.getCommandHandler().unregisterCommands().registerCommands();
 
+        // Send the confirmation message.
         user.sendMessage(section.getString("message", "&7&l> &7Reloaded configuration and commands."));
-
         return new CommandStatus();
     }
 
