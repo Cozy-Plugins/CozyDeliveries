@@ -62,21 +62,32 @@ delivery:
   pick_player_inventory:
     size: 54
     title: "&8&lSend To..."
-    background_item:
-      name: "&7"
-      slots: [ 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
-    player_item:
-      name: "&f&l{name}"
-      lore:
-        - "&7Click to send a delivery to &f{name}"
-      slots: [ 47, 48, 49, 50, 51 ]
-    last_page_item:
-      name: "&a&lLast Page"
-      lore:
-        - "&7Click to go back a page."
-      slots: [ 48 ]
-    next_page_item:
-      name: "&a&lNext Page"
-      lore:
-        - "&7Click to go to the next page."
-      slots: [ 50 ]
+    items:
+      background:
+        material: BLACK_STAINED_GLASS_PANE
+        name: "&7"
+        slots: [ 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
+      player:
+        function:
+          type: "player"
+        material: PLAYER_HEAD
+        name: "&f&l{name}"
+        lore:
+          - "&7Click to send a delivery to &f{name}"
+        slots: [ 47, 48, 49, 50, 51 ]
+      last_page:
+        function:
+          type: "last_page"
+        material: LIME_STAINED_GLASS_PANE
+        name: "&a&lLast Page"
+        lore:
+          - "&7Click to go back a page."
+        slots: [ 48 ]
+      next_page:
+        function:
+          type: "next_page"
+        material: LIME_STAINED_GLASS_PANE
+        name: "&a&lNext Page"
+        lore:
+          - "&7Click to go to the next page."
+        slots: [ 50 ]

@@ -23,21 +23,16 @@ import com.github.cozyplugins.cozydeliveries.database.PlayerRecord;
 import com.github.cozyplugins.cozydeliveries.database.PlayerTable;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozylibrary.inventory.ConfigurationInventory;
-import com.github.cozyplugins.cozylibrary.inventory.InventoryInterface;
 import com.github.cozyplugins.cozylibrary.inventory.InventoryItem;
 import com.github.cozyplugins.cozylibrary.inventory.action.action.ClickAction;
-import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Represents the delivery inventory.
@@ -54,7 +49,7 @@ public class DeliveryInventory extends ConfigurationInventory {
      * player.
      *
      * @param deliveryPlayerUuid The user to show the delivery's of.
-     * @param section The configuration section that represents the inventory.
+     * @param section            The configuration section that represents the inventory.
      */
     public DeliveryInventory(@NotNull UUID deliveryPlayerUuid, @NotNull ConfigurationSection section) {
         super(section);
@@ -69,7 +64,13 @@ public class DeliveryInventory extends ConfigurationInventory {
             case "delivery" -> this.onDeliveryItem(item);
             case "send" -> this.onSendItem(item);
             case "stats" -> this.onStatisticsItem(item);
-            default -> null;
+            default -> {
+                CozyDeliveries.getPlugin().getLogger().log(
+                        Level.WARNING,
+                        "Could not find function named " + section.getString("type", "null")
+                );
+                yield item;
+            }
         };
     }
 
