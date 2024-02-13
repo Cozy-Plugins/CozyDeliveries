@@ -2,26 +2,54 @@ deliveries:
   type: "deliveries"
   name: "deliveries"
   inventory:
+    size: 54
     title: "&8&lDeliveries"
-    delivery_slots: [
-      13, 14, 15, 16,
-      22, 23, 24, 25,
-      31, 32, 33, 34,
-      40, 41, 42, 43
-    ]
-    help_slots: [
-      45, 46
-    ]
-    help_item:
-      name: "&b&lHelp"
-      lore:
-        - 
-    send_slots: [
-      47, 48, 49, 50, 51
-    ]
-    stats_slots: [
-      52, 53
-    ]
+    items:
+      # The slots that will be filled with
+      # the player's deliveries.
+      delivery:
+        function:
+          type: "delivery"
+        slots: [
+          13, 14, 15, 16,
+          22, 23, 24, 25,
+          31, 32, 33, 34,
+          40, 41, 42, 43
+        ]
+      # The help item used to tell the
+      # players about how to use the delivery plugin.
+      # You can remove this item by deleting it here.
+      help:
+        material: LIGHT_BLUE_STAINED_GLASS_PANE
+        name: "&b&lHelp"
+        lore:
+          - "&7"
+          - "&f/deliveries send <player> &7Used to"
+          - "&7send a delivery to a player."
+        slots: [ 45, 46 ]
+      # The send item which player's can
+      # click to send items to a player.
+      # You can remove this item by deleting it here.
+      send:
+        function:
+          type: "send"
+        material: LIME_STAINED_GLASS_PANE
+        name: "&a&lSend Delivery"
+        lore:
+          - "&7Click to send items or money to a player."
+        slots: [ 47, 48, 49, 50, 51 ]
+      # The statistics item, shows the player's stats.
+      # You can remove this item by deleting it here.
+      stats:
+        function:
+          type: "stats"
+        material: YELLOW_STAINED_GLASS_PANE
+        name: "&b&lStatistics"
+        lore:
+          - "&7"
+          - "&fSent &b{sent}"
+          - "&fFrom &b{from}"
+        slots: [ 52, 53 ]
 
   reload:
     name: "reload"

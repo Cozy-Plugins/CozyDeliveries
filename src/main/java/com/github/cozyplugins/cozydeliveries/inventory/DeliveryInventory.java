@@ -19,14 +19,20 @@
 package com.github.cozyplugins.cozydeliveries.inventory;
 
 import com.github.cozyplugins.cozydeliveries.CozyDeliveries;
+import com.github.cozyplugins.cozydeliveries.database.PlayerRecord;
+import com.github.cozyplugins.cozydeliveries.database.PlayerTable;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
+import com.github.cozyplugins.cozylibrary.inventory.ConfigurationInventory;
 import com.github.cozyplugins.cozylibrary.inventory.InventoryInterface;
 import com.github.cozyplugins.cozylibrary.inventory.InventoryItem;
 import com.github.cozyplugins.cozylibrary.inventory.action.action.ClickAction;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -37,7 +43,7 @@ import java.util.UUID;
  * Represents the delivery inventory.
  * Contains all the player's deliveries.
  */
-public class DeliveryInventory extends InventoryInterface {
+public class DeliveryInventory extends ConfigurationInventory {
 
     private final @NotNull UUID deliveryPlayerUuid;
     private final @NotNull ConfigurationSection section;
@@ -51,27 +57,61 @@ public class DeliveryInventory extends InventoryInterface {
      * @param section The configuration section that represents the inventory.
      */
     public DeliveryInventory(@NotNull UUID deliveryPlayerUuid, @NotNull ConfigurationSection section) {
-        super(54, section.getString("title", "&8&lDeliveries"));
+        super(section);
 
         this.deliveryPlayerUuid = deliveryPlayerUuid;
         this.section = section;
     }
 
     @Override
-    protected void onGenerate(PlayerUser player) {
-        this.resetInventory();
+    public @Nullable InventoryItem onFunction(@NotNull InventoryItem item, @NotNull ConfigurationSection section) {
+        return switch (section.getString("type", "null")) {
+            case "delivery" -> this.onDeliveryItem(item);
+            case "send" -> this.onSendItem(item);
+            case "stats" -> this.onStatisticsItem(item);
+            default -> null;
+        };
+    }
+
+    private @Nullable InventoryItem onDeliveryItem(@NotNull InventoryItem item) {
 
         // Get the player's deliveries.
         List<Delivery> deliveryList = CozyDeliveries.getAPI()
                 .orElseThrow().getDeliveryList(this.deliveryPlayerUuid);
 
-        // Loop though all the deliveries.
-        Iterator<Integer> slotIterator = section.getListInteger("delivery_slots").iterator();
+        // Loop though the deliveries.
+        Iterator<Integer> slotIterator = item.getSlots().iterator();
         for (Delivery delivery : deliveryList) {
 
             // Check if there are any more slots to assign.
-            if (!slotIterator.hasNext()) return;
+            if (!slotIterator.hasNext()) return null;
             this.setItem(delivery.getInventoryItem(this::onGenerate).addSlot(slotIterator.next()));
         }
+
+        return null;
+    }
+
+    private @NotNull InventoryItem onSendItem(@NotNull InventoryItem item) {
+        return item.addAction((ClickAction) (user, type, inventory) -> {
+            new PickPlayerInventory().open(user.getPlayer());
+        });
+    }
+
+    private @NotNull InventoryItem onStatisticsItem(@NotNull InventoryItem item) {
+
+        // Check if the database is disabled.
+        if (CozyDeliveries.getAPI().orElseThrow().getDatabase().isDisabled()) {
+            return item;
+        }
+
+        // Get the player's statistics.
+        PlayerRecord record = CozyDeliveries.getAPI().orElseThrow().getDatabase()
+                .getTable(PlayerTable.class)
+                .getPlayerRecord(this.deliveryPlayerUuid)
+                .orElse(new PlayerRecord());
+
+        return item
+                .replaceNameAndLore("{sent}", Integer.toString(record.deliveriesSent))
+                .replaceNameAndLore("{from}", Integer.toString(record.deliveriesReceived));
     }
 }

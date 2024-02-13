@@ -20,6 +20,12 @@ database:
   connection_string: ""
   database_name: ""
 
+events:
+  # The amount of time to wait in ticks
+  # before checking if the players cooldown
+  # for an event has ended.
+  cooldown_check_ticks: 500
+
 delivery:
   # The message that will be sent to the player that receives a delivery.
   # This can be a list of strings.
@@ -43,53 +49,34 @@ delivery:
   # This lore will be used as default for
   # deliveries and will be seen in the delivery menu.
   default_lore:
-    format:
-      - "{money}"
-      - "{items}"
-      - "{commands}"
-    money:
-      - "&7Money &a{money}"
+    format: [ "{money}", "{items}", "{commands}" ]
+    money: [ "&7Money &a{money}" ]
     items:
-      format:
-        - "&7Items"
-        - "{items}"
-      items:
-        - "&7- &f{item}"
+      format: [ "&7Items", "{items}" ]
+      items: [ "&7- &f{item}" ]
     commands:
-      format:
-        - "&7Commands"
-        - "{commands}"
-      commands:
-        - "&7- &f{command}"
-
-events:
-  # The amount of time to wait in ticks
-  # before checking if the players cooldown
-  # for an event has ended.
-  cooldown_check_ticks: 500
-
-first_join:
-  # If the player should receive a delivery
-  # when they first join the server.
-  enabled: true
-
-  # The instance of the delivery.
-  delivery_content:
-    lore:
-      - "&7- &fWooden Sword"
-      - "&7- &fWooden Pickaxe"
-      - "&7- &fWooden Axe"
-      - "&7- &fWooden Shovel"
-      - "&7- &e10x &fSteak"
-    items:
-      1:
-        material: WOODEN_SWORD
-      2:
-        material: WOODEN_PICKAXE
-      3:
-        material: WOODEN_AXE
-      4:
-        material: WOODEN_SHOVEL
-      5:
-        material: COOKED_BEEF
-        amount: 10
+      format: [ "&7Commands", "{commands}" ]
+      commands: [ "&7- &f{command}" ]
+  # The inventory that shows the possible players
+  # to send a delivery to.
+  pick_player_inventory:
+    size: 54
+    title: "&8&lSend To..."
+    background_item:
+      name: "&7"
+      slots: [ 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
+    player_item:
+      name: "&f&l{name}"
+      lore:
+        - "&7Click to send a delivery to &f{name}"
+      slots: [ 47, 48, 49, 50, 51 ]
+    last_page_item:
+      name: "&a&lLast Page"
+      lore:
+        - "&7Click to go back a page."
+      slots: [ 48 ]
+    next_page_item:
+      name: "&a&lNext Page"
+      lore:
+        - "&7Click to go to the next page."
+      slots: [ 50 ]

@@ -21,9 +21,7 @@ package com.github.cozyplugins.cozydeliveries;
 import com.github.cozyplugins.cozydeliveries.command.DeliveryCommand;
 import com.github.cozyplugins.cozydeliveries.configuration.ContentConfigurationDirectory;
 import com.github.cozyplugins.cozydeliveries.configuration.EventConfigurationDirectory;
-import com.github.cozyplugins.cozydeliveries.database.CooldownTable;
-import com.github.cozyplugins.cozydeliveries.database.DeliveryRecord;
-import com.github.cozyplugins.cozydeliveries.database.DeliveryTable;
+import com.github.cozyplugins.cozydeliveries.database.*;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozydeliveries.delivery.DeliveryContent;
 import com.github.cozyplugins.cozydeliveries.event.DeliverySendEvent;
@@ -120,8 +118,9 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
             ));
         }
 
-        this.database.createTable(new DeliveryTable());
         this.database.createTable(new CooldownTable());
+        this.database.createTable(new DeliveryTable());
+        this.database.createTable(new PlayerTable());
     }
 
     @Override
@@ -252,6 +251,16 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     }
 
     @Override
+    public void createDelivery(@NotNull Player fromPlayer) {
+
+    }
+
+    @Override
+    public void createDelivery(@NotNull Player fromPlayer, @NotNull UUID toPlayerUuid) {
+
+    }
+
+    @Override
     public @NotNull Optional<Delivery> removeIfExpired(@NotNull Delivery delivery) {
         List<Delivery> list = this.removeExpiredDeliveries(List.of(delivery));
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
@@ -288,6 +297,14 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
         // Save the delivery to the database.
         this.getDatabase().getTable(DeliveryTable.class)
                 .insertRecord(new DeliveryRecord(event.getDelivery()));
+
+        // Update the player's statistics.
+        PlayerTable playerTable = this.getDatabase().getTable(PlayerTable.class);
+        playerTable.insertRecord(
+                playerTable.getPlayerRecord(event.getDelivery().getToPlayerUuid())
+                        .orElse(new PlayerRecord(event.getDelivery().getToPlayerUuid()))
+                        .incrementReceived(1)
+        );
 
         // Attempt to notify the player it was sent to.
         Player player = Bukkit.getPlayer(event.getDelivery().getToPlayerUuid());

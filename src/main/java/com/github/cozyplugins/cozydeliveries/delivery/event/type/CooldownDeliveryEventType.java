@@ -25,15 +25,12 @@ import com.github.cozyplugins.cozydeliveries.delivery.event.DeliveryEvent;
 import com.github.cozyplugins.cozydeliveries.delivery.event.DeliveryEventHandler;
 import com.github.cozyplugins.cozydeliveries.delivery.event.DeliveryEventType;
 import com.github.cozyplugins.cozydeliveries.delivery.event.handler.StandardDeliveryEventHandler;
-import com.github.cozyplugins.cozydeliveries.task.TaskContainer;
-import com.github.cozyplugins.cozylibrary.CozyPlugin;
+import com.github.cozyplugins.cozylibrary.task.TaskContainer;
 import com.github.smuddgge.squishydatabase.Query;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -41,7 +38,7 @@ import java.util.UUID;
 /**
  * Represents the cool down delivery event type.
  */
-public class CooldownDeliveryEventType implements DeliveryEventType {
+public class CooldownDeliveryEventType extends TaskContainer implements DeliveryEventType {
 
     @Override
     public @NotNull DeliveryEventHandler getDeliveryEventHandler() {
@@ -55,50 +52,35 @@ public class CooldownDeliveryEventType implements DeliveryEventType {
         final int cooldown = CozyDeliveries.getAPI().orElseThrow()
                 .getConfiguration().getInteger("events.cooldown_check_ticks", 500);
 
-        // Start the task.
-        BukkitScheduler scheduler = CozyPlugin.getPlugin().getServer().getScheduler();
-        BukkitTask task = scheduler.runTaskTimer(
-                CozyPlugin.getPlugin(),
-                () -> {
+        // Start task.
+        this.runTaskLoop(this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier()), () -> {
 
-                    // Check the player is still online.
-                    if (!Bukkit.getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .toList()
-                            .contains(event.getPlayer().getName())) {
+            // Check the player is still online.
+            if (!Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .toList()
+                    .contains(event.getPlayer().getName())) {
 
-                        // Stop the task.
-                        TaskContainer.getInstance().stopTask(
-                                this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier())
-                        );
+                // Stop the task.
+                this.stopTask(this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier()));
+                return;
+            }
 
-                        return;
-                    }
+            // Check for delivery cooldown.
+            this.checkForDeliveryCooldown(
+                    event.getPlayer().getUniqueId(),
+                    deliveryEvent.getIdentifier(),
+                    deliveryEvent
+            );
 
-                    // Check for delivery cooldown.
-                    this.checkForDeliveryCooldown(
-                            event.getPlayer().getUniqueId(),
-                            deliveryEvent.getIdentifier(),
-                            deliveryEvent
-                    );
-                },
-                cooldown, cooldown
-        );
-
-        // Register the task with the global task container.
-        TaskContainer.getInstance().registerTask(
-                this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier()),
-                task
-        );
+        }, cooldown);
     }
 
     @Override
     public void onPlayerLeave(@NotNull PlayerKickEvent event, @NotNull DeliveryEvent deliveryEvent) {
 
         // Stop the task registered with the global task container.
-        TaskContainer.getInstance().stopTask(
-                this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier())
-        );
+        this.stopTask(this.getTaskIdentifier(event.getPlayer().getUniqueId(), deliveryEvent.getIdentifier()));
     }
 
     /**

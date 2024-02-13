@@ -63,7 +63,7 @@
         <dependency>
             <groupId>com.github.Cozy-Plugins</groupId>
             <artifactId>CozyLibrary</artifactId>
-            <version>1.6.2</version>
+            <version>1.9.0</version>
         </dependency>
 
         <!-- Database Library -->
