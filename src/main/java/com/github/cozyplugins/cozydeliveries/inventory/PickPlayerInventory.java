@@ -79,11 +79,15 @@ import java.util.logging.Level;
  */
 public class PickPlayerInventory extends ConfigurationInventory {
 
+    private int page;
+
     /**
      * Used to create a pick player inventory.
      */
     public PickPlayerInventory() {
         super(CozyDeliveries.getAPI().orElseThrow().getConfiguration().getSection("delivery.pick_player_inventory"));
+
+        this.page = 0;
     }
 
     @Override
@@ -93,6 +97,8 @@ public class PickPlayerInventory extends ConfigurationInventory {
 
         return switch (section.getString("type", "null")) {
             case "player" -> this.onPlayer(item);
+            case "last_page" -> this.onLastPage(item);
+            case "next_page" -> this.onNextPage(item);
             default -> {
                 CozyDeliveries.getPlugin().getLogger().log(
                         Level.WARNING,
@@ -108,9 +114,18 @@ public class PickPlayerInventory extends ConfigurationInventory {
         // Get the all the players you can send to.
         List<OfflinePlayer> offlinePlayerList = Arrays.stream(Bukkit.getOfflinePlayers()).toList();
 
+        final int playersPerPage = item.getSlots().size();
+        final int playersToSkip = this.page * playersPerPage;
+
         // Loop though the deliveries.
         Iterator<Integer> slotIterator = item.getSlots().iterator();
+        int playerPosition = 0;
         for (OfflinePlayer player : offlinePlayerList) {
+            playerPosition++;
+
+            // Check if this player should be skipped as
+            // they are on a page before.
+            if (playersToSkip > playerPosition) continue;
 
             // Check if there are any more slots to assign.
             if (!slotIterator.hasNext()) return null;
@@ -128,5 +143,20 @@ public class PickPlayerInventory extends ConfigurationInventory {
         }
 
         return null;
+    }
+
+    private @NotNull InventoryItem onLastPage(@NotNull InventoryItem item) {
+        return item.addAction((ClickAction) (playerUser, clickType, inventory) -> {
+            if (this.page == 0) return;
+            this.page--;
+            this.onGenerate(new PlayerUser(Objects.requireNonNull(this.getOwner().getPlayer())));
+        });
+    }
+
+    private @NotNull InventoryItem onNextPage(@NotNull InventoryItem item) {
+        return item.addAction((ClickAction) (playerUser, clickType, inventory) -> {
+            this.page++;
+            this.onGenerate(new PlayerUser(Objects.requireNonNull(this.getOwner().getPlayer())));
+        });
     }
 }
