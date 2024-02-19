@@ -7,29 +7,124 @@
 #
 # Author: Smudge
 
-example_content:
+common_1:
   # The interface item to use.
   item:
     material: "BARREL"
-    name: "&f&lExample Delivery"
+    name: "&a&lDaily Reward"
     lore:
-      - "&7Click to collect delivery."
+      - "&7Click to collect the delivery."
       - "&7"
       - "&e&lContent"
       - "&f{lore}"
       - "&7"
       - "&7From {from}"
       - "&7Expires in &f{expire}"
+      - "&7"
+      - "&7You get a daily reward every &e12 hours&7."
+      - "&7"
+      - "&7&lCommon Reward"
   lore:
-    - "&7- &a100 coins"
-    - "&7- &aEnable &f/fly"
-    - "&7- &6&lOld Sword"
+    - "&7- &a500 coins"
   # What to give to the player
   # when they collect it.
-  money: 100
-  commands:
-  - "fly"
+  money: 500
+
+common_2:
+  # The interface item to use.
+  item:
+    material: "BARREL"
+    name: "&a&lDaily Reward"
+    lore:
+      - "&7Click to collect the delivery."
+      - "&7"
+      - "&e&lContent"
+      - "&f{lore}"
+      - "&7"
+      - "&7From {from}"
+      - "&7Expires in &f{expire}"
+      - "&7"
+      - "&7You get a daily reward every &e12 hours&7."
+      - "&7"
+      - "&7&lCommon Reward"
+  lore:
+    - "&7- &a1,000 coins"
+  # What to give to the player
+  # when they collect it.
+  money: 1000
+
+uncommon_1:
+  # The interface item to use.
+  item:
+    material: "BARREL"
+    name: "&a&lDaily Reward"
+    lore:
+      - "&7Click to collect the delivery."
+      - "&7"
+      - "&e&lContent"
+      - "&f{lore}"
+      - "&7"
+      - "&7From {from}"
+      - "&7Expires in &f{expire}"
+      - "&7"
+      - "&7You get a daily reward every &e12 hours&7."
+      - "&7"
+      - "&f&lUncommon Reward"
+  lore:
+    - "&7- &a2,000 coins"
+  # What to give to the player
+  # when they collect it.
+  money: 2000
+
+uncommon_2:
+  # The interface item to use.
+  item:
+    material: "BARREL"
+    name: "&a&lDaily Reward"
+    lore:
+      - "&7Click to collect the delivery."
+      - "&7"
+      - "&e&lContent"
+      - "&f{lore}"
+      - "&7"
+      - "&7From {from}"
+      - "&7Expires in &f{expire}"
+      - "&7"
+      - "&7You get a daily reward every &e12 hours&7."
+      - "&7"
+      - "&f&lUncommon Reward"
+  lore:
+    - "&7- &a4,000 coins"
+  # What to give to the player
+  # when they collect it.
+  money: 4000
+
+first_join:
+  item:
+    material: "BARREL"
+    name: "&e&lWelcome To The Server"
+    lore:
+      - "&7Click to collect the reward."
+      - "&7"
+      - "&e&lContent"
+      - "&f{lore}"
+      - "&7"
+      - "&7A gift from the server."
+  lore:
+    - "&7- &e1x &fWooden Sword"
+    - "&7- &e1x &fWooden Pickaxe"
+    - "&7- &e1x &fWooden Axe"
+    - "&7- &e1x &fWooden Shovel"
+    - "&7- &e10x &fCooked Beef"
   items:
     1:
       material: WOODEN_SWORD
-      name: "&6&lOld Sword"
+    2:
+      material: WOODEN_PICKAXE
+    3:
+      material: WOODEN_AXE
+    4:
+      material: WOODEN_SHOVEL
+    5:
+      material: COOKED_BEEF
+      amount: 10

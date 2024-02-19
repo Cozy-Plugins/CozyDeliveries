@@ -112,7 +112,7 @@ public class DeliveryInventory extends ConfigurationInventory {
                 .orElse(new PlayerRecord());
 
         return item
-                .replaceNameAndLore("{sent}", Integer.toString(record.deliveriesSent))
-                .replaceNameAndLore("{from}", Integer.toString(record.deliveriesReceived));
+                .replaceNameAndLore("{sent}", Integer.toString(record.getDeliveriesSent()))
+                .replaceNameAndLore("{from}", Integer.toString(record.getDeliveriesReceived()));
     }
 }

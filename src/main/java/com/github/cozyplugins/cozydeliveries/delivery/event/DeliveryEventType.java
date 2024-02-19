@@ -19,6 +19,7 @@
 package com.github.cozyplugins.cozydeliveries.delivery.event;
 
 import com.github.cozyplugins.cozydeliveries.delivery.event.type.CooldownDeliveryEventType;
+import com.github.cozyplugins.cozydeliveries.delivery.event.type.FirstJoinDeliveryEventType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.jetbrains.annotations.NotNull;
@@ -67,6 +68,9 @@ public interface DeliveryEventType {
     static @NotNull Optional<DeliveryEventType> getEventType(@NotNull String identifier) {
         if (identifier.equalsIgnoreCase("cooldown")) {
             return Optional.of(new CooldownDeliveryEventType());
+        }
+        if (identifier.equalsIgnoreCase("first_join")) {
+            return Optional.of(new FirstJoinDeliveryEventType());
         }
         return Optional.empty();
     }

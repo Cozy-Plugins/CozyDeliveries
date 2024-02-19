@@ -25,6 +25,8 @@ import com.github.cozyplugins.cozydeliveries.database.*;
 import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozydeliveries.delivery.DeliveryContent;
 import com.github.cozyplugins.cozydeliveries.event.DeliverySendEvent;
+import com.github.cozyplugins.cozydeliveries.inventory.AddItemsInventory;
+import com.github.cozyplugins.cozydeliveries.inventory.PickPlayerInventory;
 import com.github.cozyplugins.cozylibrary.CozyPlugin;
 import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.cozyplugins.cozylibrary.user.PlayerUser;
@@ -252,12 +254,12 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
 
     @Override
     public void createDelivery(@NotNull Player fromPlayer) {
-
+        new PickPlayerInventory().open(fromPlayer);
     }
 
     @Override
     public void createDelivery(@NotNull Player fromPlayer, @NotNull UUID toPlayerUuid) {
-
+        new AddItemsInventory(toPlayerUuid).open(fromPlayer);
     }
 
     @Override
@@ -324,22 +326,6 @@ public final class CozyDeliveries extends CozyPlugin implements CozyDeliveriesAP
     @EventHandler
     public void onPlayerLeave(PlayerKickEvent event) {
         this.getEventConfiguration().onPlayerLeaveEvent(event);
-    }
-
-    @EventHandler
-    public void onPlayerFirstJoin(PlayerJoinEvent event) {
-        if (event.getPlayer().hasPlayedBefore()) return;
-        if (!this.getConfiguration().getBoolean("first_join.enabled")) return;
-
-        // Create the delivery.
-        Delivery delivery = new Delivery(event.getPlayer().getUniqueId(), System.currentTimeMillis());
-        delivery.setDeliveryContent(new DeliveryContent()
-                .convert(this.getConfiguration().getSection("first_join.delivery_content"))
-        );
-        delivery.setFromName("Server");
-
-        // Send delivery.
-        this.sendDelivery(delivery);
     }
 
     /**

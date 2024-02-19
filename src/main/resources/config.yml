@@ -61,7 +61,7 @@ delivery:
   # to send a delivery to.
   pick_player_inventory:
     size: 54
-    title: "&8&lSend To..."
+    title: "&8&lSend To"
     items:
       background:
         material: BLACK_STAINED_GLASS_PANE
@@ -71,10 +71,16 @@ delivery:
         function:
           type: "player"
         material: PLAYER_HEAD
-        name: "&f&l{name}"
+        name: "&f&l{player}"
         lore:
-          - "&7Click to send a delivery to &f{name}"
-        slots: [ 47, 48, 49, 50, 51 ]
+          - "&7Click to send a delivery to &f{player}"
+        slots: [
+          0, 1, 2, 3, 4, 5, 6, 7, 8,
+          9, 10, 11, 12, 13, 14, 15, 16, 17,
+          18, 19, 20, 21, 22, 23, 24, 25, 26,
+          27, 28, 29, 30, 31, 32, 33, 34, 35,
+          36, 37, 38, 39, 40, 41, 42, 43, 44
+        ]
       last_page:
         function:
           type: "last_page"
@@ -91,3 +97,30 @@ delivery:
         lore:
           - "&7Click to go to the next page."
         slots: [ 50 ]
+  # The inventory where players put in items to send.
+  add_items_inventory:
+    size: 54
+    title: "&8&lSend Items To {player}"
+    items:
+      background:
+        material: BLACK_STAINED_GLASS_PANE
+        name: "&7"
+        slots: [ 45, 46, 47, 48, 49, 50, 51, 52, 53 ]
+      item_slots:
+        function:
+          type: "item"
+        slots: [
+          0, 1, 2, 3, 4, 5, 6, 7, 8,
+          9, 10, 11, 12, 13, 14, 15, 16, 17,
+          18, 19, 20, 21, 22, 23, 24, 25, 26,
+          27, 28, 29, 30, 31, 32, 33, 34, 35,
+          36, 37, 38, 39, 40, 41, 42, 43, 44
+        ]
+      send_button:
+        function:
+          type: "send"
+        material: LIME_STAINED_GLASS_PANE
+        name: "&a&lSend Items"
+        lore:
+          - "&7Click to send these items to &f{player}&7."
+        slots: [ 47, 48, 49, 50, 51 ]

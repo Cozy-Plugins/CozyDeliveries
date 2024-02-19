@@ -32,12 +32,11 @@ import java.util.UUID;
 public class PlayerRecord extends Record {
 
     @Field(type = RecordFieldType.PRIMARY)
-    public @NotNull String playerUuid;
-    public int deliveriesSent = 0;
-    public int deliveriesReceived = 0;
+    public @NotNull String playerUuid = "null";
+    public @NotNull String deliveriesSent = "0";
+    public @NotNull String deliveriesReceived = "0";
 
     public PlayerRecord() {
-        this.playerUuid = "null";
     }
 
     /**
@@ -49,13 +48,21 @@ public class PlayerRecord extends Record {
         this.playerUuid = playerUuid.toString();
     }
 
+    public int getDeliveriesSent() {
+        return Integer.parseInt(this.deliveriesSent);
+    }
+
+    public int getDeliveriesReceived() {
+        return Integer.parseInt(this.deliveriesReceived);
+    }
+
     public @NotNull PlayerRecord incrementSent(int amount) {
-        this.deliveriesSent += amount;
+        this.deliveriesSent = String.valueOf(this.getDeliveriesSent() + amount);
         return this;
     }
 
     public @NotNull PlayerRecord incrementReceived(int amount) {
-        this.deliveriesReceived += amount;
+        this.deliveriesReceived = String.valueOf(this.getDeliveriesReceived() + amount);
         return this;
     }
 }

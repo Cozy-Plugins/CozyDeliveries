@@ -85,7 +85,10 @@ public class PickPlayerInventory extends ConfigurationInventory {
      * Used to create a pick player inventory.
      */
     public PickPlayerInventory() {
-        super(CozyDeliveries.getAPI().orElseThrow().getConfiguration().getSection("delivery.pick_player_inventory"));
+        super(CozyDeliveries.getAPI().orElseThrow()
+                .getConfiguration()
+                .getSection("delivery.pick_player_inventory")
+        );
 
         this.page = 0;
     }
@@ -129,9 +132,9 @@ public class PickPlayerInventory extends ConfigurationInventory {
 
             // Check if there are any more slots to assign.
             if (!slotIterator.hasNext()) return null;
-            this.setItem(item
-                    .removeSlots()
+            this.setItem(new InventoryItem(item.duplicate())
                     .addSlot(slotIterator.next())
+                    .replaceNameAndLore("{player}", Objects.requireNonNull(player.getName()))
                     .setSkull(player.getUniqueId())
                     .addAction((ClickAction) (playerUser, clickType, inventory) -> {
                         CozyDeliveries.getAPI().orElseThrow().createDelivery(

@@ -7,27 +7,33 @@
 #
 # Author: Smudge
 
-example_event:
-  # Represents a type of delivery that
-  # will be sent to players.
-
+daily_rewards:
+  # Represents an example of a daily reward event.
+  # To disable, you can delete this section from the configuration.
+  #
   # The type of delivery.
   # Delivery Types:
   # - cooldown (Sends a delivery every x seconds)
   type: "cooldown"
-
   # How often to send the delivery.
-  cooldown_seconds: 86400 # 1 day in seconds.
-
+  cooldown_seconds: 43200 # 12 hours in seconds.
   # The number of deliveries to send.
   amount: 1
-
   # A list of the possible deliveries to choose from.
   # The first string should be the content identifier,
   # and the second is the chance of it being picked.
   deliveries:
-    - "example_content 1"
-
+    - "common_1 0.5"
+    - "common_2 0.5"
+    - "uncommon_1 0.2"
+    - "uncommon_2 0.2"
   # How long the deliveries should be available for.
   remove_after_seconds: 172800 # 2 days in seconds.
+
+first_join_rewards:
+  # Represents a first join daily reward.
+  # To disable, you can delete this section from the configuration.
+  type: "first_join"
+  deliveries:
+    - "first_join 1"
 
