@@ -98,6 +98,9 @@ public class PickPlayerInventory extends ConfigurationInventory {
             case "player" -> this.onPlayer(item);
             case "last_page" -> this.onLastPage(item);
             case "next_page" -> this.onNextPage(item);
+            case "back" -> item.addAction((ClickAction) (user, type, inventory) -> {
+                user.runCommandsAsOp("deliveries");
+            });
             default -> {
                 CozyDeliveries.getPlugin().getLogger().log(
                         Level.WARNING,

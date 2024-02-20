@@ -100,6 +100,14 @@ delivery:
         lore:
           - "&7Click to go to the next page."
         slots: [ 50 ]
+      back:
+        function:
+          type: "back"
+        material: LIME_STAINED_GLASS_PANE
+        name: "&a&lBack"
+        lore:
+          - "&7Click to go back to the deliveries menu."
+        slots: [ 45 ]
   # The inventory where players put in items to send.
   add_items_inventory:
     size: 54
@@ -127,3 +135,11 @@ delivery:
         lore:
           - "&7Click to send these items to &f{player}&7."
         slots: [ 47, 48, 49, 50, 51 ]
+      back:
+        function:
+          type: "back"
+        material: LIME_STAINED_GLASS_PANE
+        name: "&a&lBack"
+        lore:
+          - "&7Click to go back to the pick player menu."
+        slots: [ 45 ]

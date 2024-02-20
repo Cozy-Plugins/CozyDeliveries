@@ -109,6 +109,9 @@ public class AddItemsInventory extends ConfigurationInventory {
         return switch (section.getString("type", "null")) {
             case "item" -> this.onItem(item);
             case "send" -> this.onSend(item);
+            case "back" -> item.addAction((ClickAction) (user, type, inventory) -> {
+                new PickPlayerInventory().open(user.getPlayer());
+            });
             default -> {
                 CozyDeliveries.getPlugin().getLogger().log(
                         Level.WARNING,
