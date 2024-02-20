@@ -27,6 +27,7 @@ import com.github.cozyplugins.cozylibrary.inventory.action.action.ClickAction;
 import com.github.cozyplugins.cozylibrary.inventory.action.action.PlaceAction;
 import com.github.cozyplugins.cozylibrary.item.CozyItem;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -87,6 +88,17 @@ public class AddItemsInventory extends ConfigurationInventory {
 
         this.sendToPlayerUuid = sendToPlayerUuid;
         this.slotList = new ArrayList<>();
+
+        // Drop items when closed.
+        this.addCloseAction((playerUser, inventory) -> {
+            for (ItemStack item : this.getItems(inventory)) {
+                playerUser.getPlayer().getWorld().dropItem(
+                        playerUser.getPlayer().getLocation(),
+                        item
+                );
+            }
+            return false;
+        });
     }
 
     @Override
@@ -114,32 +126,63 @@ public class AddItemsInventory extends ConfigurationInventory {
     }
 
     public @NotNull InventoryItem onSend(@NotNull InventoryItem item) {
-        return item.addAction((ClickAction) (playerUser, clickType, inventory) -> {
+        final String name = Bukkit.getOfflinePlayer(this.sendToPlayerUuid).getName();
+        assert name != null;
+        return item
+                .replaceNameAndLore("{player}", name)
+                .addAction((ClickAction) (user, clickType, inventory) -> {
+                    // Get the items to send.
+                    List<ItemStack> itemListToSend = this.getItems(inventory);
 
-            // Get the items to send.
-            List<ItemStack> itemListToSend = this.getItems(inventory);
+                    // Check if there are no items.
+                    if (itemListToSend.isEmpty()) {
+                        user.sendMessage(CozyDeliveries.getAPI().orElseThrow()
+                                .getConfiguration()
+                                .getString("delivery.no_items", "&7You must add items to the delivery to send a delivery.")
+                        );
+                        return;
+                    }
 
-            // Send the delivery.
-            CozyDeliveries.getAPI().orElseThrow().sendDelivery(
-                    this.sendToPlayerUuid,
-                    Objects.requireNonNull(this.getOwner()).getName(),
-                    itemListToSend.stream().map(CozyItem::new).toList()
-            );
+                    // Get cost.
+                    final double cost = CozyDeliveries.getAPI().orElseThrow().getConfiguration().getDouble("delivery.cost", 0);
 
-            // Close the inventory.
-            playerUser.getPlayer().closeInventory();
-            this.resetInventory();
+                    // Check if they have enough money.
+                    if (cost > 0) {
+                        if (user.getMoney() < cost) {
+                            user.sendMessage(CozyDeliveries.getAPI().orElseThrow()
+                                    .getConfiguration()
+                                    .getString("delivery.not_enough_money", "&7You do not have enough money to send a delivery.")
+                            );
+                            return;
+                        }
 
-            // Update player stats.
-            PlayerRecord record = CozyDeliveries.getAPI().orElseThrow().getDatabase()
-                    .getTable(PlayerTable.class)
-                    .getPlayerRecord(this.getOwner().getUniqueId())
-                    .orElse(new PlayerRecord(this.getOwner().getUniqueId()));
+                        // Remove money.
+                        user.removeMoney(cost);
+                    }
 
-            CozyDeliveries.getAPI().orElseThrow().getDatabase()
-                    .getTable(PlayerTable.class)
-                    .insertRecord(record.incrementSent(1));
-        });
+                    // Reset the inventory.
+                    this.resetInventory();
+
+                    // Send the delivery.
+                    CozyDeliveries.getAPI().orElseThrow().sendDelivery(
+                            this.sendToPlayerUuid,
+                            Objects.requireNonNull(this.getOwner()).getName(),
+                            itemListToSend.stream().map(CozyItem::new).toList()
+                    );
+
+                    // Close the inventory.
+                    user.getPlayer().closeInventory();
+
+                    // Update player stats.
+                    PlayerRecord record = CozyDeliveries.getAPI().orElseThrow().getDatabase()
+                            .getTable(PlayerTable.class)
+                            .getPlayerRecord(this.getOwner().getUniqueId())
+                            .orElse(new PlayerRecord(this.getOwner().getUniqueId()));
+
+                    CozyDeliveries.getAPI().orElseThrow().getDatabase()
+                            .getTable(PlayerTable.class)
+                            .insertRecord(record.incrementSent(1));
+                });
     }
 
     /**

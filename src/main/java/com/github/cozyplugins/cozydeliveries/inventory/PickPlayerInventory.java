@@ -124,6 +124,7 @@ public class PickPlayerInventory extends ConfigurationInventory {
         Iterator<Integer> slotIterator = item.getSlots().iterator();
         int playerPosition = 0;
         for (OfflinePlayer player : offlinePlayerList) {
+            if (player.getUniqueId() == Objects.requireNonNull(this.getOwner()).getUniqueId()) continue;
             playerPosition++;
 
             // Check if this player should be skipped as
@@ -139,7 +140,7 @@ public class PickPlayerInventory extends ConfigurationInventory {
                     .addAction((ClickAction) (playerUser, clickType, inventory) -> {
                         CozyDeliveries.getAPI().orElseThrow().createDelivery(
                                 Objects.requireNonNull(this.getOwner()),
-                                playerUser.getUuid()
+                                player.getUniqueId()
                         );
                     })
             );

@@ -101,14 +101,20 @@ public class DeliverySendCommand implements CommandType {
         if (!Arrays.stream(Bukkit.getOfflinePlayers())
                 .map(OfflinePlayer::getName)
                 .toList()
-                .contains(arguments.getArguments().get(1))) {
+                .contains(arguments.getArguments().get(0))) {
 
             user.sendMessage(section.getString("incorrect_arguments_player", "&7Incorrect arguments. &e" + this.getSyntax()));
             return new CommandStatus();
         }
 
         // Get the player to send the delivery to.
-        final OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getArguments().get(1));
+        final OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getArguments().get(0));
+
+        // Check if they have selected them self.
+        if (player.getUniqueId().equals(user.getUuid())) {
+            user.sendMessage(section.getString("chose_self", "&7You cannot choose your self."));
+            return new CommandStatus();
+        }
 
         // Create the delivery.
         CozyDeliveries.getAPI().orElseThrow().createDelivery(user.getPlayer(), player.getUniqueId());

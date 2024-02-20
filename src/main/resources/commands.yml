@@ -61,6 +61,7 @@ deliveries:
     incorrect_arguments: "&7Incorrect arguments. &e/deliveries send <collection> <player>"
     incorrect_arguments_collection: "&7Incorrect collection name. &e/deliveries send <collection> <player>"
     incorrect_arguments_player: "&7Player does not exist. &e/deliveries send <collection> <player>"
+    chose_self: "&7You cannot choose your self."
     database_disabled: "&7The database is currently disabled. This could be an error."
     sent: "&7Sent a delivery to &f{player}&7."
     cancelled: "&7Unable to send this delivery to &f{player}&7."

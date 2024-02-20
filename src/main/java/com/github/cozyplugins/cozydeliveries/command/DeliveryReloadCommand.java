@@ -73,9 +73,6 @@ public class DeliveryReloadCommand implements CommandType {
         CozyDeliveries.getAPI().orElseThrow().getContentConfiguration().getDirectory().reload();
         CozyLibrary.getCommandDirectory().reload();
 
-        // Re-register the commands.
-        CozyLibrary.getCommandHandler().unregisterCommands().registerCommands();
-
         // Send the confirmation message.
         user.sendMessage(section.getString("message", "&7&l> &7Reloaded configuration and commands."));
         return new CommandStatus();

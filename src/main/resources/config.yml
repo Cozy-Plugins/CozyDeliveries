@@ -27,6 +27,9 @@ events:
   cooldown_check_ticks: 500
 
 delivery:
+  # The cost to send a delivery to another player.
+  cost: 100
+  not_enough_money: "&7You do not have enough money to send a delivery."
   # The message that will be sent to the player that receives a delivery.
   # This can be a list of strings.
   # You can use the placeholder {sender} to get the sender's name.
