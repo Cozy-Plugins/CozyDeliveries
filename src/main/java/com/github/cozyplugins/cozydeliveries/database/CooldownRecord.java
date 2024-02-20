@@ -45,8 +45,8 @@ public class CooldownRecord extends Record {
      * Used to create a new player cool down record
      * for a specific event identifier.
      *
-     * @param playerUuid The player's uuid.
-     * @param eventIdentifier The event identifier.
+     * @param playerUuid                  The player's uuid.
+     * @param eventIdentifier             The event identifier.
      * @param lastDeliveryTimeStampMillis The last delivery for this
      *                                    event as a time stamp.
      */

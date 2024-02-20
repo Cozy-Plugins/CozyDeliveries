@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents the cozy deliveries api interface.
@@ -153,7 +152,7 @@ public interface CozyDeliveriesAPI {
      * asks for which items or money to send and then sends them.
      *
      * @param fromPlayer The instance of the player that
-     *               is sending a delivery.
+     *                   is sending a delivery.
      */
     void createDelivery(@NotNull Player fromPlayer);
 
@@ -161,7 +160,7 @@ public interface CozyDeliveriesAPI {
      * Used to ask a player for the items to send
      * to the other player.
      *
-     * @param fromPlayer The player who is sending the items or money.
+     * @param fromPlayer   The player who is sending the items or money.
      * @param toPlayerUuid The player it is being sent to.
      */
     void createDelivery(@NotNull Player fromPlayer, @NotNull UUID toPlayerUuid);

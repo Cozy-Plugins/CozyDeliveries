@@ -25,7 +25,6 @@ import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import com.github.smuddgge.squishyconfiguration.indicator.ConfigurationConvertable;
 import com.github.smuddgge.squishyconfiguration.interfaces.ConfigurationSection;
 import com.github.smuddgge.squishyconfiguration.memory.MemoryConfigurationSection;
-import com.google.gson.Gson;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +37,7 @@ import java.util.logging.Level;
  */
 public class DeliveryContent implements ConfigurationConvertable<DeliveryContent>, Replicable<DeliveryContent> {
 
-    private @NotNull List<CozyItem> itemList;
+    private final @NotNull List<CozyItem> itemList;
     private @NotNull List<String> commandList;
     private int money;
 

@@ -38,7 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -56,7 +57,7 @@ public class Delivery implements ConfigurationConvertable<Delivery>, Replicable<
     /**
      * Used to create a new instance of a delivery.
      *
-     * @param toPlayerUuid The player it will be delivered to.
+     * @param toPlayerUuid    The player it will be delivered to.
      * @param timeStampMillis The time stamp it was sent to the player.
      */
     public Delivery(@NotNull UUID toPlayerUuid, @NotNull Long timeStampMillis) {

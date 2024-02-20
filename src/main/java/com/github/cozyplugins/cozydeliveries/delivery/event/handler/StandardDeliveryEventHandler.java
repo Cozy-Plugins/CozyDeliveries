@@ -23,8 +23,6 @@ import com.github.cozyplugins.cozydeliveries.delivery.Delivery;
 import com.github.cozyplugins.cozydeliveries.delivery.DeliveryContent;
 import com.github.cozyplugins.cozydeliveries.delivery.event.DeliveryEvent;
 import com.github.cozyplugins.cozydeliveries.delivery.event.DeliveryEventHandler;
-import com.github.cozyplugins.cozylibrary.CozyLibrary;
-import com.github.cozyplugins.cozylibrary.user.PlayerUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +90,7 @@ public class StandardDeliveryEventHandler implements DeliveryEventHandler {
         final double outOf = this.getSum(map.values()) * factorIncrement;
 
         // Pick random number.
-        final int random = new Random().nextInt((int) outOf + 1) ;
+        final int random = new Random().nextInt((int) outOf + 1);
 
         // Get the place in the map.
         // rand(0-130) = 34 -> 34 / 100 = 0.34
@@ -105,7 +103,7 @@ public class StandardDeliveryEventHandler implements DeliveryEventHandler {
             CozyDeliveries.getPlugin().getLogger().log(
                     Level.WARNING,
                     "Something went wrong when calculating the random delivery.\n"
-                    + "places:" + places + " factorIncrement:" + factorIncrement + " outOf:" + outOf + " randomPlace:" + randomPlace
+                            + "places:" + places + " factorIncrement:" + factorIncrement + " outOf:" + outOf + " randomPlace:" + randomPlace
             );
             identifier = map.keySet().stream().toList().get(0);
         }

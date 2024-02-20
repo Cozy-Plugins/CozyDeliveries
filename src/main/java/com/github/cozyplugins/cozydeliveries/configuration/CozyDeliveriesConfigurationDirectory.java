@@ -35,7 +35,7 @@ import java.util.Optional;
  * Represents a configuration directory in this plugin.
  *
  * @param <T> The type of object the directory contains.
- *           Each configuration key is a one of these objects.
+ *            Each configuration key is a one of these objects.
  */
 public abstract class CozyDeliveriesConfigurationDirectory<T extends ConfigurationConvertable<T>> {
 
@@ -44,7 +44,7 @@ public abstract class CozyDeliveriesConfigurationDirectory<T extends Configurati
     /**
      * Used to create a new configuration directory instance.
      *
-     * @param directoryName The name of the directory in this plugin.
+     * @param directoryName   The name of the directory in this plugin.
      * @param defaultFileName The default file name and extension.
      */
     public CozyDeliveriesConfigurationDirectory(@NotNull String directoryName, @NotNull String defaultFileName) {
@@ -143,7 +143,7 @@ public abstract class CozyDeliveriesConfigurationDirectory<T extends Configurati
      * Used to insert a type into the directory.
      *
      * @param identifier The instance of the identifier.
-     * @param type The type to insert.
+     * @param type       The type to insert.
      * @return This instance.
      */
     public @NotNull CozyDeliveriesConfigurationDirectory<T> insertType(@NotNull String identifier, @NotNull T type) {
